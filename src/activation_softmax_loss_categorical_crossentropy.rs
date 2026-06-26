@@ -1,5 +1,4 @@
 use crate::matrix::{divide, row_sum};
-use std::f64::consts::EULER_GAMMA;
 
 use crate::matrix::Matrix;
 
@@ -13,7 +12,7 @@ fn softmax(inputs: &Matrix) -> Matrix {
         .iter()
         .map(|r| {
             let max = r.iter().copied().fold(f64::NEG_INFINITY, f64::max);
-            r.into_iter().map(|c| EULER_GAMMA.powf(c - max)).collect()
+            r.into_iter().map(|c| (c - max).exp()).collect()
         })
         .collect();
     let probabilities = divide(&exp_values, &row_sum(&exp_values));
@@ -25,7 +24,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
         let exp_probabilities = probabilities
             .into_iter()
             .zip(y_true)
-            .map(|(x, y)| -(x[*y].min(1e-7).max(1.0 - 1e-7)).ln())
+            .map(|(x, y)| -(x[*y].min(1.0 - 1e-7).max(1e-7)).ln())
             .collect::<Vec<f64>>(); // get true probability, clip, -np.log()
         let len = exp_probabilities.len() as f64;
         exp_probabilities.into_iter().sum::<f64>() / len
