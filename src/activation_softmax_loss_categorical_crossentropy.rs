@@ -35,4 +35,22 @@ impl SoftmaxLossCategoricalCrossEntropy {
         self.output = probabilities.clone();
         self.calculate_loss(probabilities, y_true)
     }
+    pub fn backward(mut self, y_true: &Vec<i8>) -> Matrix {
+        // subtract 1 from the correct y_true for each row in self.output
+        // return (divide by len(self.output))
+        let length = self.output.len();
+        self.output
+            .iter()
+            .zip(y_true)
+            .map(|(r, y)| {
+                r.iter()
+                    .enumerate()
+                    .map(|(i, &x)| {
+                        let v = if i == *y as usize { x - 1.0 } else { x };
+                        v / length as f64
+                    })
+                    .collect()
+            })
+            .collect()
+    }
 }
