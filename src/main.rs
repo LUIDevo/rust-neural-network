@@ -29,13 +29,15 @@ fn main() {
     let mut output = SoftmaxLossCategoricalCrossEntropy::default();
     let mut optimiser = Optimiser::default();
 
-    for _ in 0..=1000 {
+    for iterations in 0..=1000 {
         // define forward pass
         let dense1_output=dense1.forward(&x);
         let activation1_output=activation1.forward(&dense1_output);
         let dense2_output=dense2.forward(&activation1_output);
         let loss=output.forward(&dense2_output,&y);
-        // get loss
+        if iterations%100 == 0 {
+            println!("Loss: {}", loss);
+        }
         // define backward pass & update weights
     }
 }

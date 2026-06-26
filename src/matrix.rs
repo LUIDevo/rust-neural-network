@@ -34,9 +34,9 @@ pub fn sum(a: &Matrix, b: &Vec<f64>) -> Matrix {
 pub fn transpose(a: &Matrix) -> Matrix {
     let (r, c) = (a.len(), a[0].len());
     let mut out = vec![vec![0.0; r]; c];
-    for n in 0..r {
-        for p in 0..c {
-            out[n][p] = a[p][n];
+    for i in 0..r {
+        for j in 0..c {
+            out[j][i] = a[i][j];
         }
     }
     out
