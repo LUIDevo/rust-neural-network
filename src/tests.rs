@@ -1,6 +1,6 @@
 use crate::activation::ActivationReLU;
-use crate::matrix::transpose;
 use crate::matrix::dot;
+use crate::matrix::transpose;
 
 #[test]
 fn dot_works() {
@@ -12,15 +12,12 @@ fn dot_works() {
 #[test]
 fn relu_works() {
     let a = vec![vec![-1.0, 2.0], vec![-3.0, 4.0]];
-    let activation=ActivationReLU::default();
-    assert_eq!(
-        activation.forward(&a),
-        vec![vec![0.0, 2.0], vec![0.0, 4.0]]
-    );
+    let activation = ActivationReLU::default();
+    assert_eq!(activation.forward(&a), vec![vec![0.0, 2.0], vec![0.0, 4.0]]);
 }
 
 #[test]
-fn transpose_works() { 
+fn transpose_works() {
     let a = vec![vec![1.0, 2.0], vec![3.0, 4.0]];
-    assert_eq!( transpose(&a), vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
+    assert_eq!(transpose(&a), vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
 }
