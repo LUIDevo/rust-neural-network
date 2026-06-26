@@ -21,7 +21,7 @@ impl LayerDense {
             dbiases: vec![0.0; n_neurons],
         }
     }
-    pub fn forward(mut self, inputs: Matrix) -> Matrix {
+    pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
         self.inputs = inputs.clone();
         sum(&dot(&self.weights, &inputs), &self.biases)
     }

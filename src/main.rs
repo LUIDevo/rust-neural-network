@@ -13,14 +13,14 @@ use activation_softmax_loss_categorical_crossentropy::SoftmaxLossCategoricalCros
 use layer::LayerDense;
 use rng::Rng;
 
-fn create_dataset() -> Vec<vertical::Sample> {
-    let data = vertical::vertical_data(100, 3, 42);
-    println!("generated {} samples", data.len());
-    data
+fn create_dataset() -> (matrix::Matrix, Vec<usize>) {
+    let (x, y) = vertical::vertical_data(100, 3, 42);
+    println!("generated {} samples", x.len());
+    (x, y)
 }
 
 fn main() {
-    let data = create_dataset();
+    let (x, y) = create_dataset();
     let mut rng = Rng::new(0);
     // define layers, activation, loss function
     let mut dense1 = LayerDense::new(2, 3, &mut rng);
@@ -31,6 +31,10 @@ fn main() {
 
     for _ in 0..=1000 {
         // define forward pass
+        let dense1_output=dense1.forward(&x);
+        let activation1_output=activation1.forward(&dense1_output);
+        let dense2_output=dense2.forward(&activation1_output);
+        let loss=output.forward(&dense2_output,&y);
         // get loss
         // define backward pass & update weights
     }

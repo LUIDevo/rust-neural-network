@@ -21,21 +21,21 @@ fn softmax(inputs: &Matrix) -> Matrix {
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
-    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<i8>) -> f64 {
+    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f64 {
         let exp_probabilities = probabilities
             .into_iter()
             .zip(y_true)
-            .map(|(x, y)| -(x[*y as usize].min(1e-7).max(1.0 - 1e-7)).ln())
+            .map(|(x, y)| -(x[*y].min(1e-7).max(1.0 - 1e-7)).ln())
             .collect::<Vec<f64>>(); // get true probability, clip, -np.log()
         let len = exp_probabilities.len() as f64;
         exp_probabilities.into_iter().sum::<f64>() / len
     }
-    pub fn forward(mut self, inputs: &Matrix, y_true: &Vec<i8>) -> f64 {
+    pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> f64 {
         let probabilities = softmax(inputs);
         self.output = probabilities.clone();
         self.calculate_loss(probabilities, y_true)
     }
-    pub fn backward(mut self, y_true: &Vec<i8>) -> Matrix {
+    pub fn backward(&mut self, y_true: &Vec<usize>) -> Matrix {
         // subtract 1 from the correct y_true for each row in self.output
         // return (divide by len(self.output))
         let length = self.output.len();
@@ -46,7 +46,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
                 r.iter()
                     .enumerate()
                     .map(|(i, &x)| {
-                        let v = if i == *y as usize { x - 1.0 } else { x };
+                        let v = if i == *y{ x - 1.0 } else { x };
                         v / length as f64
                     })
                     .collect()

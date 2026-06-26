@@ -7,7 +7,7 @@ pub struct ActivationReLU {
 }
 
 impl ActivationReLU {
-    pub fn forward(mut self, inputs: &Matrix) -> Matrix {
+    pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
         self.inputs = inputs.clone();
         inputs
             .iter()
