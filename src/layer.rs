@@ -21,5 +21,7 @@ impl LayerDense {
             dinputs: Vec::new(),
         }
     }
-    pub fn forward(mut self, inputs: Matrix) -> Matrix {}
+    pub fn forward(mut self, inputs: Matrix) -> Matrix {
+        todo!()
+    }
 }
