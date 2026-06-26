@@ -54,5 +54,8 @@ pub fn row_sum(a: &Matrix) -> Vec<f64> {
 }
 
 pub fn divide(a: &Matrix, b: &Vec<f64>) -> Matrix {
-    a.iter().zip(b).map(|(m,n)| m.into_iter().map(|l| l/n).collect()).collect()
+    a.iter()
+        .zip(b)
+        .map(|(m, n)| m.into_iter().map(|l| l / n).collect())
+        .collect()
 }

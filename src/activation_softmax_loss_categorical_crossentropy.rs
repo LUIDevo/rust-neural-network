@@ -1,11 +1,11 @@
-use std::f64::consts::EULER_GAMMA;
 use crate::matrix::{divide, row_sum};
+use std::f64::consts::EULER_GAMMA;
 
 use crate::matrix::Matrix;
 
 #[derive(Default)]
 pub struct SoftmaxLossCategoricalCrossEntropy {
-    // loss: Loss,
+    output: Matrix,
 }
 
 fn softmax(inputs: &Matrix) -> Matrix {
@@ -16,15 +16,23 @@ fn softmax(inputs: &Matrix) -> Matrix {
             r.into_iter().map(|c| EULER_GAMMA.powf(c - max)).collect()
         })
         .collect();
-    let probabilities = divide(&exp_values,&row_sum(&exp_values));
+    let probabilities = divide(&exp_values, &row_sum(&exp_values));
     probabilities
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
-    pub fn calculate() {
-        todo!();
+    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<i8>) -> f64 {
+        let exp_probabilities = probabilities
+            .into_iter()
+            .zip(y_true)
+            .map(|(x, y)| -(x[*y as usize].min(1e-7).max(1.0 - 1e-7)).ln())
+            .collect::<Vec<f64>>(); // get true probability, clip, -np.log()
+        let len = exp_probabilities.len() as f64;
+        exp_probabilities.into_iter().sum::<f64>() / len
     }
-    pub fn forward(mut self, inputs: &Matrix) -> f64 {
-        todo!();
+    pub fn forward(mut self, inputs: &Matrix, y_true: &Vec<i8>) -> f64 {
+        let probabilities = softmax(inputs);
+        self.output = probabilities.clone();
+        self.calculate_loss(probabilities, y_true)
     }
 }
