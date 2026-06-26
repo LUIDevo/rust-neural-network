@@ -26,8 +26,7 @@ pub fn dot(a: &Matrix, b: &Matrix) -> Matrix {
 
 pub fn sum(a: &Matrix, b: &Vec<f64>) -> Matrix {
     a.iter()
-        .zip(b)
-        .map(|(x, y)| x.into_iter().map(|z| z + y).collect())
+        .map(|row| row.iter().zip(b).map(|(z, bias)| z + bias).collect())
         .collect()
 }
 
@@ -58,4 +57,15 @@ pub fn divide(a: &Matrix, b: &Vec<f64>) -> Matrix {
         .zip(b)
         .map(|(m, n)| m.into_iter().map(|l| l / n).collect())
         .collect()
+}
+
+pub fn col_sum(a: &Matrix) -> Vec<f64> {
+    let cols = a[0].len();
+    let mut out = vec![0.0; cols];
+    for row in a {
+        for (j, &v) in row.iter().enumerate() {
+            out[j] += v;
+        }
+    }
+    out
 }

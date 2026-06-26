@@ -20,6 +20,24 @@ fn softmax(inputs: &Matrix) -> Matrix {
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
+    pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f64 {
+        // find mean of percentage correct predictions
+        let samples = probabilities.len();
+        let correct = probabilities
+            .into_iter()
+            .zip(y_true)
+            .filter(|(p, y)| {
+                let pred = p
+                    .iter()
+                    .enumerate()
+                    .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                    .map(|(i, _)| i)
+                    .unwrap();
+                pred == **y
+            })
+            .count();
+        correct as f64 / samples as f64
+    }
     pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f64 {
         let exp_probabilities = probabilities
             .into_iter()
@@ -29,10 +47,13 @@ impl SoftmaxLossCategoricalCrossEntropy {
         let len = exp_probabilities.len() as f64;
         exp_probabilities.into_iter().sum::<f64>() / len
     }
-    pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> f64 {
+    pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> (f64, f64) {
         let probabilities = softmax(inputs);
         self.output = probabilities.clone();
-        self.calculate_loss(probabilities, y_true)
+        (
+            self.calculate_loss(probabilities.clone(), &y_true),
+            self.calculate_accuracy(&probabilities, &y_true),
+        )
     }
     pub fn backward(&mut self, y_true: &Vec<usize>) -> Matrix {
         // subtract 1 from the correct y_true for each row in self.output

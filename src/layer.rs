@@ -1,6 +1,6 @@
 //! Dense (fully-connected) layer.
 
-use crate::matrix::{Matrix, dot, randn_matrix, row_sum, sum, transpose};
+use crate::matrix::{Matrix, dot, randn_matrix, row_sum, col_sum, sum, transpose};
 use crate::rng::Rng;
 
 pub struct LayerDense {
@@ -27,7 +27,7 @@ impl LayerDense {
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
         self.dweights = dot(&transpose(&self.inputs), &dvalues);
-        self.dbiases = row_sum(&dvalues);
+        self.dbiases = col_sum(&dvalues);
         return dot(&dvalues, &transpose(&self.weights));
     }
 }

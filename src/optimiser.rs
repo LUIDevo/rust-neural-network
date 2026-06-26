@@ -11,7 +11,12 @@ impl Optimiser {
             .weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(w, dw)| w.iter().zip(dw).map(|(&i, &dwi)| i - dwi * self.lr).collect())
+            .map(|(w, dw)| {
+                w.iter()
+                    .zip(dw)
+                    .map(|(&i, &dwi)| i - dwi * self.lr)
+                    .collect()
+            })
             .collect();
         layer.biases = layer
             .biases
