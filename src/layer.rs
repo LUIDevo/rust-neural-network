@@ -1,6 +1,6 @@
 //! Dense (fully-connected) layer.
 
-use crate::matrix::{Matrix, dot, randn_matrix, row_sum, col_sum, sum, transpose};
+use crate::matrix::{Matrix, col_sum, dot, randn_matrix, row_sum, sum, transpose};
 use crate::rng::Rng;
 
 pub struct LayerDense {

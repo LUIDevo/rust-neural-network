@@ -27,9 +27,10 @@ fn main() {
     let mut activation1 = ActivationReLU::default();
     let mut dense2 = LayerDense::new(3, 3, &mut rng);
     let mut output = SoftmaxLossCategoricalCrossEntropy::default();
-    let optimiser = Optimiser { lr: 1.0 };
+    let mut optimiser = Optimiser { lr: 1.0, lr_decay: 0.01 };
 
     for iterations in 0..=1000 {
+        optimiser.pre_update(iterations);
         // define forward pass
         let dense1_output = dense1.forward(&x);
         let activation1_output = activation1.forward(&dense1_output);
