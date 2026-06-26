@@ -1,6 +1,6 @@
 //! Dense (fully-connected) layer.
 
-use crate::matrix::{Matrix, randn_matrix};
+use crate::matrix::{Matrix, randn_matrix, dot, add};
 use crate::rng::Rng;
 
 pub struct LayerDense {
@@ -21,7 +21,7 @@ impl LayerDense {
             dinputs: Vec::new(),
         }
     }
-    pub fn forward(mut self, inputs: Matrix) -> Matrix {
-        todo!()
+    pub fn forward(self, inputs: Matrix) -> Matrix {
+        add(&dot(&self.weights, &inputs),&self.biases)
     }
 }

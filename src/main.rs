@@ -1,12 +1,12 @@
+mod activation;
 mod layer;
 mod matrix;
 mod rng;
 mod tests;
-mod activation;
 mod vertical;
 
-use layer::LayerDense;
 use activation::ActivationReLU;
+use layer::LayerDense;
 use rng::Rng;
 
 fn create_dataset() -> Vec<vertical::Sample> {
@@ -18,11 +18,14 @@ fn create_dataset() -> Vec<vertical::Sample> {
 fn main() {
     let data = create_dataset();
     let mut rng = Rng::new(0);
-    // define layers
-    let mut dense1 = LayerDense::new(2,3, &mut rng);
-    // define activation function
+    // define layers, activation, loss function
+    let mut dense1 = LayerDense::new(2, 3, &mut rng);
     let mut activation1 = ActivationReLU::default();
-    // define forward pass
-    // get loss
-    // define backward pass & update weights
+    let mut dense2 = LayerDense::new(3, 3, &mut rng);
+
+    for _ in 0..=1001 {
+        // define forward pass
+        // get loss
+        // define backward pass & update weights
+    }
 }

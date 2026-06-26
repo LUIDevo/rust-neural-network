@@ -11,17 +11,21 @@ pub fn randn_matrix(rows: usize, cols: usize, stddev: f64, rng: &mut Rng) -> Mat
 }
 
 pub fn dot(a: &Matrix, b: &Matrix) -> Matrix {
-    let (m,n,p)=(a.len(), b.len(), b[0].len());
-    let mut out=vec!(vec![0.0; p]; m);
+    let (m, n, p) = (a.len(), b.len(), b[0].len());
+    let mut out = vec![vec![0.0; p]; m];
     for i in 0..m {
-        for j in 0..n { 
-            let aij=a[i][j];
+        for j in 0..n {
+            let aij = a[i][j];
             for k in 0..p {
-                out[i][k]+=aij*b[j][k];
+                out[i][k] += aij * b[j][k];
             }
         }
     }
     out
+}
+
+pub fn add(a: &Matrix, b: &Vec<f64>) -> Matrix {
+    a.iter().zip(b).map(|(x,y)| x.into_iter().map(|z| z+y).collect()).collect()
 }
 
 pub fn transpose(a: &Matrix) -> Matrix {

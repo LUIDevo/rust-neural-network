@@ -1,5 +1,5 @@
-use crate::matrix::dot;
 use crate::activation::ActivationReLU;
+use crate::matrix::dot;
 
 #[test]
 fn dot_works() {
@@ -11,5 +11,8 @@ fn dot_works() {
 #[test]
 fn relu_works() {
     let a = vec![vec![-1.0, 2.0], vec![-3.0, 4.0]];
-    assert_eq!(ActivationReLU::forward(&a), vec![vec![0.0, 2.0], vec![0.0, 4.0]]);
+    assert_eq!(
+        ActivationReLU::forward(&a),
+        vec![vec![0.0, 2.0], vec![0.0, 4.0]]
+    );
 }
