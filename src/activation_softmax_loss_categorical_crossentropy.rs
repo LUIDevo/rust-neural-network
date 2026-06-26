@@ -46,7 +46,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
                 r.iter()
                     .enumerate()
                     .map(|(i, &x)| {
-                        let v = if i == *y{ x - 1.0 } else { x };
+                        let v = if i == *y { x - 1.0 } else { x };
                         v / length as f64
                     })
                     .collect()

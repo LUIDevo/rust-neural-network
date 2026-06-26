@@ -3,7 +3,6 @@ use crate::matrix::Matrix;
 #[derive(Default)]
 pub struct ActivationReLU {
     pub inputs: Matrix,
-    pub dinputs: Matrix,
 }
 
 impl ActivationReLU {
@@ -18,17 +17,16 @@ impl ActivationReLU {
             })
             .collect()
     }
-    pub fn backward(mut self, dvalues: &Matrix) {
-        self.dinputs = self
-            .inputs
+    pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
+        self.inputs
             .iter()
             .zip(dvalues)
             .map(|(row, d_row)| {
                 row.into_iter()
                     .zip(d_row)
                     .map(|(&x, &d)| if x > 0.0 { d } else { 0.0 })
-                    .collect()
+                    .collect::<Vec<f64>>()
             })
-            .collect();
+            .collect()
     }
 }
