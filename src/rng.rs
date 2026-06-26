@@ -1,4 +1,4 @@
-//! Minimal RNG so we don't pull in the `rand` crate.
+// AI Generated RNG - I'm probably going to reimplement this with the rand crate but this will do for now
 
 /// xorshift64 generator.
 pub struct Rng(u64);
