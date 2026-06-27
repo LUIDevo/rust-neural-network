@@ -9,6 +9,8 @@ pub struct LayerDense {
     pub biases: Vec<f64>,
     pub dweights: Matrix,
     pub dbiases: Vec<f64>,
+    pub v_weights: Matrix,
+    pub v_biases: Vec<f64>,
 }
 
 impl LayerDense {
@@ -19,6 +21,8 @@ impl LayerDense {
             biases: vec![0.0; n_neurons],
             dweights: vec![vec![0.0; n_neurons]; n_inputs],
             dbiases: vec![0.0; n_neurons],
+            v_weights: vec![vec![0.0; n_neurons]; n_inputs],
+            v_biases: vec![0.0; n_neurons],
         }
     }
     pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
