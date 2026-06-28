@@ -15,8 +15,7 @@ fn softmax(inputs: &Matrix) -> Matrix {
             r.into_iter().map(|c| (c - max).exp()).collect()
         })
         .collect();
-    let probabilities = divide(&exp_values, &row_sum(&exp_values));
-    probabilities
+    divide(&exp_values, &row_sum(&exp_values))
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
