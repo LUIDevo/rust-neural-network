@@ -50,7 +50,7 @@ fn main() {
         dinputs = dense2.backward(&dinputs);
         dinputs = activation1.backward(&dinputs);
         dinputs = dense1.backward(&dinputs);
-        optimiser.update_params(&mut dense2);
-        optimiser.update_params(&mut dense1);
+        optimiser.update_params(&mut dense2, iterations);
+        optimiser.update_params(&mut dense1, iterations);
     }
 }
