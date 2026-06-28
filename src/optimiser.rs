@@ -20,7 +20,7 @@ pub struct RMSProp {
     pub lr_decay: f64,
 }
 
-pub struct Adam { 
+pub struct Adam {
     pub lr: f64,
     pub moment_decay: f64,
     pub variance_decay: f64,
@@ -29,7 +29,7 @@ pub struct Adam {
 
 impl Adam {
     pub fn pre_update(&mut self) {
-        self.iterations+=1;
+        self.iterations += 1;
     }
 }
 
@@ -42,7 +42,7 @@ impl Optimiser for Adam {
             .map(|(vw, dw)| {
                 vw.iter()
                     .zip(dw)
-                    .map(|(&vwi, &dwi)| self.moment_decay * vwi + (1.0-self.moment_decay) * dwi)
+                    .map(|(&vwi, &dwi)| self.moment_decay * vwi + (1.0 - self.moment_decay) * dwi)
                     .collect()
             })
             .collect();
@@ -50,7 +50,7 @@ impl Optimiser for Adam {
             .v_biases
             .iter()
             .zip(&layer.dbiases)
-            .map(|(vb, db)| self.moment_decay * vb + (1.0-self.moment_decay) * db)
+            .map(|(vb, db)| self.moment_decay * vb + (1.0 - self.moment_decay) * db)
             .collect();
         layer.cache_weights = layer
             .cache_weights
@@ -59,7 +59,9 @@ impl Optimiser for Adam {
             .map(|(cw, dw)| {
                 cw.iter()
                     .zip(dw)
-                    .map(|(&cwi, &dwi)| self.variance_decay * cwi + (1.0 - self.variance_decay) * dwi.powi(2))
+                    .map(|(&cwi, &dwi)| {
+                        self.variance_decay * cwi + (1.0 - self.variance_decay) * dwi.powi(2)
+                    })
                     .collect()
             })
             .collect();
@@ -67,12 +69,36 @@ impl Optimiser for Adam {
             .cache_biases
             .iter()
             .zip(&layer.dbiases)
-            .map(|(cb, db)| cb*self.variance_decay + (1.0-self.variance_decay)*db.powi(2))
+            .map(|(cb, db)| cb * self.variance_decay + (1.0 - self.variance_decay) * db.powi(2))
             .collect();
-        let vw_hat: Matrix=layer.v_weights.iter().map(|vw| vw.iter().map(|vwi| vwi/(1.0-(self.moment_decay).powi(self.iterations))).collect()).collect();
-        let vb_hat: Vec<f64> =layer.v_biases.iter().map(|vb| vb/(1.0-(self.moment_decay).powi(self.iterations))).collect();
-        let cw_hat: Matrix=layer.cache_weights.iter().map(|cw| cw.iter().map(|cwi| cwi/(1.0-(self.variance_decay).powi(self.iterations))).collect()).collect();
-        let cb_hat: Vec<f64> =layer.cache_biases.iter().map(|cb| cb/(1.0-(self.variance_decay).powi(self.iterations))).collect();
+        let vw_hat: Matrix = layer
+            .v_weights
+            .iter()
+            .map(|vw| {
+                vw.iter()
+                    .map(|vwi| vwi / (1.0 - (self.moment_decay).powi(self.iterations)))
+                    .collect()
+            })
+            .collect();
+        let vb_hat: Vec<f64> = layer
+            .v_biases
+            .iter()
+            .map(|vb| vb / (1.0 - (self.moment_decay).powi(self.iterations)))
+            .collect();
+        let cw_hat: Matrix = layer
+            .cache_weights
+            .iter()
+            .map(|cw| {
+                cw.iter()
+                    .map(|cwi| cwi / (1.0 - (self.variance_decay).powi(self.iterations)))
+                    .collect()
+            })
+            .collect();
+        let cb_hat: Vec<f64> = layer
+            .cache_biases
+            .iter()
+            .map(|cb| cb / (1.0 - (self.variance_decay).powi(self.iterations)))
+            .collect();
         layer.weights = layer
             .weights
             .iter()
@@ -93,7 +119,6 @@ impl Optimiser for Adam {
             .zip(cb_hat)
             .map(|((b, vbh), cbh)| b - vbh * self.lr / (cbh.sqrt() + 1e-7))
             .collect();
-        
     }
 }
 
@@ -114,7 +139,7 @@ impl Optimiser for RMSProp {
             .cache_biases
             .iter()
             .zip(&layer.dbiases)
-            .map(|(cb, db)| cb*self.lr_decay + (1.0-self.lr_decay)*db.powi(2))
+            .map(|(cb, db)| cb * self.lr_decay + (1.0 - self.lr_decay) * db.powi(2))
             .collect();
         layer.weights = layer
             .weights
