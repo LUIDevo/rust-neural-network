@@ -7,7 +7,7 @@ mod rng;
 mod tests;
 mod vertical;
 
-use crate::optimiser::{AdaGrad, Optimiser, RMSProp, SGD};
+use crate::optimiser::{AdaGrad, Optimiser, RMSProp, SGD, Adam};
 use activation::ActivationReLU;
 use activation_softmax_loss_categorical_crossentropy::SoftmaxLossCategoricalCrossEntropy;
 use layer::LayerDense;
@@ -27,13 +27,15 @@ fn main() {
     let mut activation1 = ActivationReLU::default();
     let mut dense2 = LayerDense::new(3, 3, &mut rng);
     let mut output = SoftmaxLossCategoricalCrossEntropy::default();
-    let mut optimiser = RMSProp {
+    let mut optimiser = Adam {
         lr: 0.2,
-        lr_decay: 0.999,
+        moment_decay: 0.9,
+        variance_decay: 0.999,
+        iterations: 0,
     };
 
     for iterations in 0..=1000 {
-        // optimiser.pre_update(iterations);
+        optimiser.pre_update();
         // define forward pass
         let dense1_output = dense1.forward(&x);
         let activation1_output = activation1.forward(&dense1_output);
@@ -50,7 +52,7 @@ fn main() {
         dinputs = dense2.backward(&dinputs);
         dinputs = activation1.backward(&dinputs);
         dinputs = dense1.backward(&dinputs);
-        optimiser.update_params(&mut dense2, iterations);
-        optimiser.update_params(&mut dense1, iterations);
+        optimiser.update_params(&mut dense2);
+        optimiser.update_params(&mut dense1);
     }
 }

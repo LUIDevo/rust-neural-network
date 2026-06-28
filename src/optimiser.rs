@@ -1,4 +1,5 @@
 use crate::layer::LayerDense;
+use crate::matrix::Matrix;
 
 pub trait Optimiser {
     fn update_params(&self, layer: &mut LayerDense);
@@ -23,10 +24,17 @@ pub struct Adam {
     pub lr: f64,
     pub moment_decay: f64,
     pub variance_decay: f64,
+    pub iterations: i32,
+}
+
+impl Adam {
+    pub fn pre_update(&mut self) {
+        self.iterations+=1;
+    }
 }
 
 impl Optimiser for Adam {
-    fn update_params(&self, layer: &mut LayerDense, iterations: i32) {
+    fn update_params(&self, layer: &mut LayerDense) {
         layer.v_weights = layer
             .v_weights
             .iter()
@@ -61,29 +69,29 @@ impl Optimiser for Adam {
             .zip(&layer.dbiases)
             .map(|(cb, db)| cb*self.variance_decay + (1.0-self.variance_decay)*db.powi(2))
             .collect();
-        let vw_hat=
-        let vb_hat=
-        let cw_hat=
-        let cb_hat=
+        let vw_hat: Matrix=layer.v_weights.iter().map(|vw| vw.iter().map(|vwi| vwi/(1.0-(self.moment_decay).powi(self.iterations))).collect()).collect();
+        let vb_hat: Vec<f64> =layer.v_biases.iter().map(|vb| vb/(1.0-(self.moment_decay).powi(self.iterations))).collect();
+        let cw_hat: Matrix=layer.cache_weights.iter().map(|cw| cw.iter().map(|cwi| cwi/(1.0-(self.variance_decay).powi(self.iterations))).collect()).collect();
+        let cb_hat: Vec<f64> =layer.cache_biases.iter().map(|cb| cb/(1.0-(self.variance_decay).powi(self.iterations))).collect();
         layer.weights = layer
             .weights
             .iter()
-            .zip(&layer.v_weights)
-            .zip(&layer.cache_weights)
-            .map(|((w, vw), cw)| {
+            .zip(vw_hat)
+            .zip(cw_hat)
+            .map(|((w, vwh), cwh)| {
                 w.iter()
-                    .zip(vw)
-                    .zip(cw)
-                    .map(|((&wi, &vwi), &cwi)| wi - vwi * self.lr / (cwi.sqrt() + 1e-7))
+                    .zip(vwh)
+                    .zip(cwh)
+                    .map(|((wi, vwhi), cwhi)| wi - vwhi * self.lr / (cwhi.sqrt() + 1e-7))
                     .collect()
             })
             .collect();
         layer.biases = layer
             .biases
             .iter()
-            .zip(&layer.v_biases)
-            .zip(&layer.cache_biases)
-            .map(|((b, vb), cb)| b - vb * self.lr / (cb.sqrt() + 1e-7))
+            .zip(vb_hat)
+            .zip(cb_hat)
+            .map(|((b, vbh), cbh)| b - vbh * self.lr / (cbh.sqrt() + 1e-7))
             .collect();
         
     }
