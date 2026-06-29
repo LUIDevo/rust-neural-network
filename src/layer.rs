@@ -1,7 +1,13 @@
 //! Dense (fully-connected) layer.
 
+use crate::ActivationReLU;
 use crate::matrix::{Matrix, col_sum, dot, randn_matrix, row_sum, sum, transpose};
 use crate::rng::Rng;
+
+pub enum Layer {
+    Dense(LayerDense),
+    ReLU(ActivationReLU),
+}
 
 pub struct LayerDense {
     pub inputs: Matrix,
@@ -13,6 +19,21 @@ pub struct LayerDense {
     pub v_biases: Vec<f64>,
     pub cache_weights: Matrix,
     pub cache_biases: Vec<f64>,
+}
+
+impl Layer {
+    pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
+        match self {
+            Layer::Dense(l) => l.forward(inputs),
+            Layer::ReLU(l) => l.forward(inputs),
+        }
+    }
+    pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
+        match self {
+            Layer::Dense(l) => l.backward(dvalues),
+            Layer::ReLU(l) => l.backward(dvalues),
+        }
+    }
 }
 
 impl LayerDense {

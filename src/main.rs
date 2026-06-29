@@ -11,7 +11,7 @@ mod vertical;
 use crate::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
 use activation::ActivationReLU;
 use activation_softmax_loss_categorical_crossentropy::SoftmaxLossCategoricalCrossEntropy;
-use layer::LayerDense;
+use layer::{Layer, LayerDense};
 use rng::Rng;
 
 fn create_dataset() -> (matrix::Matrix, Vec<usize>) {
@@ -25,9 +25,12 @@ fn main() {
     let (test_x, test_y) = spiral::spiral_data(100, 3, 99);
     let mut rng = Rng::new(0);
     // define layers, activation, loss function
-    let mut dense1 = LayerDense::new(2, 64, &mut rng);
-    let mut activation1 = ActivationReLU::default();
-    let mut dense2 = LayerDense::new(64, 3, &mut rng);
+    let mut out = x.clone();
+    let mut layers: Vec<Layer> = vec![
+        Layer::Dense(LayerDense::new(2, 64, &mut rng)),
+        Layer::ReLU(ActivationReLU::default()),
+        Layer::Dense(LayerDense::new(64, 3, &mut rng)),
+    ];
     let mut output = SoftmaxLossCategoricalCrossEntropy::default();
     let mut optimiser = Adam {
         lr: 0.05,
@@ -39,10 +42,11 @@ fn main() {
     for iterations in 0..=1000 {
         optimiser.pre_update();
         // define forward pass
-        let dense1_output = dense1.forward(&x);
-        let activation1_output = activation1.forward(&dense1_output);
-        let dense2_output = dense2.forward(&activation1_output);
-        let (loss, accuracy) = output.forward(&dense2_output, &y);
+        let mut out = x.clone();
+        for layer in layers.iter_mut() {
+            out = layer.forward(&out);
+        }
+        let (loss, accuracy) = output.forward(&out, &y);
         if iterations % 100 == 0 {
             println!(
                 "Iteration: {}, Loss: {}, Accuracy: {}",
@@ -50,16 +54,20 @@ fn main() {
             );
         }
         // define backward pass & update weights
-        let mut dinputs = output.backward(&y);
-        dinputs = dense2.backward(&dinputs);
-        dinputs = activation1.backward(&dinputs);
-        dinputs = dense1.backward(&dinputs);
-        optimiser.update_params(&mut dense2);
-        optimiser.update_params(&mut dense1);
+        let mut grad = output.backward(&y);
+        for layer in layers.iter_mut().rev() {
+            grad = layer.backward(&grad);
+        }
+        for layer in layers.iter_mut() {
+            if let Layer::Dense(dense) = layer {
+                optimiser.update_params(dense);
+            }
+        }
     }
-    let a = dense1.forward(&test_x);
-    let b = activation1.forward(&a);
-    let c = dense2.forward(&b);
-    let (test_loss, test_acc) = output.forward(&c, &test_y);
+    out = test_x;
+    for layer in layers.iter_mut() {
+        out = layer.forward(&out);
+    }
+    let (test_loss, test_acc) = output.forward(&out, &test_y);
     println!("TEST  loss {:.3}  acc {:.3}", test_loss, test_acc);
 }
