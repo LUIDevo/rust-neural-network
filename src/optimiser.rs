@@ -24,6 +24,7 @@ pub struct Adam {
     pub lr: f64,
     pub moment_decay: f64,
     pub variance_decay: f64,
+    pub lambda_reg: f64,
     pub iterations: i32,
 }
 
@@ -33,7 +34,7 @@ impl Adam {
     }
 }
 
-impl Optimiser for Adam {
+impl Optimiser for Adam { // technically AdamW now
     fn update_params(&self, layer: &mut LayerDense) {
         layer.v_weights = layer
             .v_weights
@@ -108,7 +109,7 @@ impl Optimiser for Adam {
                 w.iter()
                     .zip(vwh)
                     .zip(cwh)
-                    .map(|((wi, vwhi), cwhi)| wi - vwhi * self.lr / (cwhi.sqrt() + 1e-7))
+                    .map(|((wi, vwhi), cwhi)| wi - vwhi * self.lr / (cwhi.sqrt() + 1e-7) - self.lambda_reg * wi)
                     .collect()
             })
             .collect();

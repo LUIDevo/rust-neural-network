@@ -36,6 +36,7 @@ fn main() {
         lr: 0.05,
         moment_decay: 0.9,
         variance_decay: 0.999,
+        lambda_reg: 0.001,
         iterations: 0,
     };
 
