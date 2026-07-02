@@ -34,7 +34,8 @@ impl Adam {
     }
 }
 
-impl Optimiser for Adam { // technically AdamW now
+impl Optimiser for Adam {
+    // technically AdamW now
     fn update_params(&self, layer: &mut LayerDense) {
         layer.v_weights = layer
             .v_weights
@@ -109,7 +110,9 @@ impl Optimiser for Adam { // technically AdamW now
                 w.iter()
                     .zip(vwh)
                     .zip(cwh)
-                    .map(|((wi, vwhi), cwhi)| wi - vwhi * self.lr / (cwhi.sqrt() + 1e-7) - self.lambda_reg * wi)
+                    .map(|((wi, vwhi), cwhi)| {
+                        wi - vwhi * self.lr / (cwhi.sqrt() + 1e-7) - self.lambda_reg * wi
+                    })
                     .collect()
             })
             .collect();

@@ -10,7 +10,7 @@ impl Rng {
     }
 
     /// Uniform f64 in [0, 1).
-    fn next_f64(&mut self) -> f64 {
+    pub fn next_f64(&mut self) -> f64 {
         let mut x = self.0;
         x ^= x << 13;
         x ^= x >> 7;
