@@ -73,7 +73,7 @@ impl LayerDense {
 impl LayerDropout {
     pub fn new(rate: f64, seed: u64) -> Self {
         LayerDropout {
-            rate: 1.0-rate,
+            rate: 1.0 - rate,
             mask: Vec::new(),
             rng: Rng::new(seed),
         }
@@ -81,13 +81,29 @@ impl LayerDropout {
     pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
         self.mask = inputs
             .iter()
-            .map(|row| row.iter()
-                .map(|_| if self.rng.next_f64() < self.rate { 1.0 / self.rate } else { 0.0 })
-                .collect()).collect();
-        inputs.iter().zip(&self.mask)
-                .map(|(r, m)| r.iter().zip(m).map(|(a,b)| a * b).collect()).collect()
+            .map(|row| {
+                row.iter()
+                    .map(|_| {
+                        if self.rng.next_f64() < self.rate {
+                            1.0 / self.rate
+                        } else {
+                            0.0
+                        }
+                    })
+                    .collect()
+            })
+            .collect();
+        inputs
+            .iter()
+            .zip(&self.mask)
+            .map(|(r, m)| r.iter().zip(m).map(|(a, b)| a * b).collect())
+            .collect()
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
-        dvalues.iter().zip(&self.mask).map(|(dv, m)| dv.iter().zip(m).map(|(dvi,m)| dvi*m).collect()).collect()
+        dvalues
+            .iter()
+            .zip(&self.mask)
+            .map(|(dv, m)| dv.iter().zip(m).map(|(dvi, m)| dvi * m).collect())
+            .collect()
     }
 }
