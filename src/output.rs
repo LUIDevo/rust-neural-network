@@ -2,6 +2,17 @@ use crate::matrix::{divide, row_sum};
 
 use crate::matrix::Matrix;
 
+
+enum Output {
+    SoftmaxCCE(SoftmaxLossCategoricalCrossEntropy),
+    LinearMSE(LinearMeanSquaredError),
+}
+
+#[derive(Default)]
+pub struct LinearMeanSquaredError {
+    output: Matrix,
+}
+
 #[derive(Default)]
 pub struct SoftmaxLossCategoricalCrossEntropy {
     output: Matrix,
@@ -55,6 +66,42 @@ impl SoftmaxLossCategoricalCrossEntropy {
         )
     }
     pub fn backward(&mut self, y_true: &Vec<usize>) -> Matrix {
+        // subtract 1 from the correct y_true for each row in self.output
+        // return (divide by len(self.output))
+        let length = self.output.len();
+        self.output
+            .iter()
+            .zip(y_true)
+            .map(|(r, y)| {
+                r.iter()
+                    .enumerate()
+                    .map(|(i, &x)| {
+                        let v = if i == *y { x - 1.0 } else { x };
+                        v / length as f64
+                    })
+                    .collect()
+            })
+            .collect()
+    }
+}
+
+
+impl LinearMeanSquaredError {
+    pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Matrix) -> f64 {
+        todo!()
+    }
+    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Matrix) -> f64 {
+        let samples=probabilities.len() as f64;
+        probabilities.iter().zip(y_true).map(|(p, y)| p.iter().zip(y).map(|(pi, yi)| (pi-yi).powi(2)/samples).collect()).collect();
+        probabilities.into_iter().sum::<f64>()
+    }
+    pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f64, f64) {
+        (
+            self.calculate_loss(inputs, &y_true),
+            self.calculate_accuracy(&probabilities, &y_true),
+        )
+    }
+    pub fn backward(&mut self, y_true: &Matrix) -> Matrix {
         // subtract 1 from the correct y_true for each row in self.output
         // return (divide by len(self.output))
         let length = self.output.len();
