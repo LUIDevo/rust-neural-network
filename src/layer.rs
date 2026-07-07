@@ -49,7 +49,7 @@ impl LayerDense {
     pub fn new(n_inputs: usize, n_neurons: usize, rng: &mut Rng) -> Self {
         LayerDense {
             inputs: Vec::new(),
-            weights: randn_matrix(n_inputs, n_neurons, 0.01, rng),
+            weights: randn_matrix(n_inputs, n_neurons, 0.1, rng),
             biases: vec![0.0; n_neurons],
             dweights: vec![vec![0.0; n_neurons]; n_inputs],
             dbiases: vec![0.0; n_neurons],

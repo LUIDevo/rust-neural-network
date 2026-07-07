@@ -11,7 +11,6 @@ mod vertical;
 
 use crate::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
 use activation::ActivationReLU;
-use output::SoftmaxLossCategoricalCrossEntropy;
 use layer::{Layer, LayerDense, LayerDropout};
 use rng::Rng;
 
@@ -27,14 +26,15 @@ fn main() {
     let mut rng = Rng::new(0);
     // define layers, activation, loss function
     let mut layers: Vec<Layer> = vec![
-        Layer::Dense(LayerDense::new(2, 64, &mut rng)),
+        Layer::Dense(LayerDense::new(1, 64, &mut rng)),
         Layer::ReLU(ActivationReLU::default()),
-        Layer::Dropout(LayerDropout::new(0.0, 12345)),
-        Layer::Dense(LayerDense::new(64, 3, &mut rng)),
+        Layer::Dense(LayerDense::new(64, 64, &mut rng)),
+        Layer::ReLU(ActivationReLU::default()),
+        Layer::Dense(LayerDense::new(64, 1, &mut rng)),
     ];
     let mut output = output::LinearMeanSquaredError::default();
     let mut optimiser = Adam {
-        lr: 0.05,
+        lr: 0.01,
         moment_decay: 0.9,
         variance_decay: 0.999,
         lambda_reg: 0.001,

@@ -87,34 +87,58 @@ impl SoftmaxLossCategoricalCrossEntropy {
 
 
 impl LinearMeanSquaredError {
-    pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Matrix) -> f64 {
-        todo!()
+    pub fn calculate_accuracy(&self, predictions: &Matrix, y_true: &Matrix) -> f64 {
+        let flat: Vec<f64> = y_true.iter().flatten().copied().collect();
+        let n = flat.len() as f64;
+        let mean = flat.iter().sum::<f64>() / n;
+        let std = (flat.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / n).sqrt();
+        let precision = std / 250.0;
+
+        let mut total = 0.0;
+        let mut correct = 0.0;
+        for (p, y) in predictions.iter().zip(y_true) {
+            for (pi, yi) in p.iter().zip(y) {
+                total += 1.0;
+                if (pi - yi).abs() < precision {
+                    correct += 1.0;
+                }
+            }
+        }
+        correct / total
     }
-    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Matrix) -> f64 {
-        let samples=probabilities.len() as f64;
-        probabilities.iter().zip(y_true).map(|(p, y)| p.iter().zip(y).map(|(pi, yi)| (pi-yi).powi(2)/samples).collect()).collect();
-        probabilities.into_iter().sum::<f64>()
+    pub fn calculate_loss(&self, predictions: &Matrix, y_true: &Matrix) -> f64 {
+        let samples = predictions.len() as f64;
+        predictions
+            .iter()
+            .zip(y_true)
+            .map(|(p, y)| {
+                let outputs = p.len() as f64;
+                p.iter()
+                    .zip(y)
+                    .map(|(pi, yi)| (pi - yi).powi(2))
+                    .sum::<f64>()
+                    / outputs
+            })
+            .sum::<f64>()
+            / samples 
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f64, f64) {
+        self.output = inputs.clone();
         (
             self.calculate_loss(inputs, &y_true),
-            self.calculate_accuracy(&probabilities, &y_true),
+            self.calculate_accuracy(inputs, &y_true),
         )
     }
     pub fn backward(&mut self, y_true: &Matrix) -> Matrix {
-        // subtract 1 from the correct y_true for each row in self.output
-        // return (divide by len(self.output))
-        let length = self.output.len();
+        let samples = self.output.len() as f64;
         self.output
             .iter()
             .zip(y_true)
-            .map(|(r, y)| {
-                r.iter()
-                    .enumerate()
-                    .map(|(i, &x)| {
-                        let v = if i == *y { x - 1.0 } else { x };
-                        v / length as f64
-                    })
+            .map(|(p, y)| {
+                let outputs = p.len() as f64;
+                p.iter()
+                    .zip(y)
+                    .map(|(pi, yi)| 2.0 * (pi - yi) / outputs / samples)
                     .collect()
             })
             .collect()
