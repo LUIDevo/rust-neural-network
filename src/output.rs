@@ -2,10 +2,34 @@ use crate::matrix::{divide, row_sum};
 
 use crate::matrix::Matrix;
 
-
-enum Output {
+pub enum Output {
     SoftmaxCCE(SoftmaxLossCategoricalCrossEntropy),
     LinearMSE(LinearMeanSquaredError),
+}
+
+/// Ground-truth labels. Shape depends on the problem:
+/// - `Sparse`: class index per sample (classification).
+/// - `Dense`: real-valued target matrix (regression / multi-label).
+pub enum Target {
+    Sparse(Vec<usize>),
+    Dense(Matrix),
+}
+
+impl Output {
+    pub fn forward(&mut self, inputs: &Matrix, target: &Target) -> (f64, f64) {
+        match (self, target) {
+            (Output::SoftmaxCCE(o), Target::Sparse(y)) => o.forward(inputs, y),
+            (Output::LinearMSE(o), Target::Dense(y)) => o.forward(inputs, y),
+            _ => panic!("output head and target type mismatch"),
+        }
+    }
+    pub fn backward(&mut self, target: &Target) -> Matrix {
+        match (self, target) {
+            (Output::SoftmaxCCE(o), Target::Sparse(y)) => o.backward(y),
+            (Output::LinearMSE(o), Target::Dense(y)) => o.backward(y),
+            _ => panic!("output head and target type mismatch"),
+        }
+    }
 }
 
 #[derive(Default)]

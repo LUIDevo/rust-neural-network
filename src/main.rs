@@ -9,8 +9,11 @@ mod spiral;
 mod tests;
 mod vertical;
 
-use crate::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
+// use std::process::Output;
+
+use crate::{optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD}, output::LinearMeanSquaredError};
 use activation::ActivationReLU;
+use output::{Output, Target};
 use layer::{Layer, LayerDense, LayerDropout};
 use rng::Rng;
 
@@ -32,7 +35,8 @@ fn main() {
         Layer::ReLU(ActivationReLU::default()),
         Layer::Dense(LayerDense::new(64, 1, &mut rng)),
     ];
-    let mut output = output::LinearMeanSquaredError::default();
+    let mut output = Output::LinearMSE(LinearMeanSquaredError::default());
+    let target = Target::Dense(y);
     let mut optimiser = Adam {
         lr: 0.01,
         moment_decay: 0.9,
@@ -48,7 +52,7 @@ fn main() {
         for layer in layers.iter_mut() {
             out = layer.forward(&out);
         }
-        let (loss, accuracy) = output.forward(&out, &y);
+        let (loss, accuracy) = output.forward(&out, &target);
         if iterations % 100 == 0 {
             println!(
                 "Iteration: {}, Loss: {}, Accuracy: {}",
@@ -56,7 +60,7 @@ fn main() {
             );
         }
         // define backward pass & update weights
-        let mut grad = output.backward(&y);
+        let mut grad = output.backward(&target);
         for layer in layers.iter_mut().rev() {
             grad = layer.backward(&grad);
         }
@@ -73,6 +77,7 @@ fn main() {
             _ => out = layer.forward(&out),
         }
     }
-    let (test_loss, test_acc) = output.forward(&out, &test_y);
+    let test_target = Target::Dense(test_y);
+    let (test_loss, test_acc) = output.forward(&out, &test_target);
     println!("TEST  loss {:.3}  acc {:.3}", test_loss, test_acc);
 }
