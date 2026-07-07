@@ -4,6 +4,7 @@ mod layer;
 mod matrix;
 mod optimiser;
 mod rng;
+mod sine;
 mod spiral;
 mod tests;
 mod vertical;
