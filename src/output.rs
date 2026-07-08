@@ -7,9 +7,6 @@ pub enum Output {
     LinearMSE(LinearMeanSquaredError),
 }
 
-/// Ground-truth labels. Shape depends on the problem:
-/// - `Sparse`: class index per sample (classification).
-/// - `Dense`: real-valued target matrix (regression / multi-label).
 pub enum Target {
     Sparse(Vec<usize>),
     Dense(Matrix),
@@ -109,7 +106,6 @@ impl SoftmaxLossCategoricalCrossEntropy {
     }
 }
 
-
 impl LinearMeanSquaredError {
     pub fn calculate_accuracy(&self, predictions: &Matrix, y_true: &Matrix) -> f64 {
         let flat: Vec<f64> = y_true.iter().flatten().copied().collect();
@@ -144,7 +140,7 @@ impl LinearMeanSquaredError {
                     / outputs
             })
             .sum::<f64>()
-            / samples 
+            / samples
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f64, f64) {
         self.output = inputs.clone();

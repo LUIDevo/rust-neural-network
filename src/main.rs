@@ -1,8 +1,8 @@
 mod activation;
-mod output;
 mod layer;
 mod matrix;
 mod optimiser;
+mod output;
 mod rng;
 mod sine;
 mod spiral;
@@ -11,10 +11,13 @@ mod vertical;
 
 // use std::process::Output;
 
-use crate::{optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD}, output::LinearMeanSquaredError};
+use crate::{
+    optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD},
+    output::LinearMeanSquaredError,
+};
 use activation::ActivationReLU;
-use output::{Output, Target};
 use layer::{Layer, LayerDense, LayerDropout};
+use output::{Output, Target};
 use rng::Rng;
 
 fn create_dataset() -> (matrix::Matrix, matrix::Matrix) {

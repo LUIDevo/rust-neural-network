@@ -3,3 +3,15 @@ A simple classification model loosely based off of the model in NNFS
 The model currently uses the Adam optimiser
 
 It also has the ability to use dropout, but for this use case it tanks the models accuracy so it's temporarily removed
+
+Dev Roadmap:
+- [ ] Typesystem switch to Vec<f64>
+- [ ] Fashion-MNIST (Dense baseline)
+- [ ] Conv2D + Pool + Flatten
+- [ ] GPU (wgpu)
+- [ ] BatchNorm / LayerNorm
+- [ ] Residual connections
+- [ ] Fashion-MNIST v2 (CNN + GPU, compare to baseline)
+- [ ] Self-attention from scratch
+- [ ] Multi-head attention + positional encoding
+- [ ] Minimal transformer block
