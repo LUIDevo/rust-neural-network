@@ -1,4 +1,5 @@
 mod activation;
+mod fashion_mnist;
 mod layer;
 mod matrix;
 mod optimiser;
