@@ -6,16 +6,40 @@ mod tests;
 
 // use std::process::Output;
 
+use std::fs::{self, File};
+use std::path::Path;
+
+use crate::data::decode;
 use crate::math::matrix::Matrix;
 use crate::math::rng::Rng;
 use crate::nn::activation::ActivationReLU;
 use crate::nn::layer::{Layer, LayerDense, LayerDropout};
 use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
 use crate::nn::output::{LinearMeanSquaredError, Output, Target};
+use crate::data::decode::decode_png;
 
-fn create_dataset() -> (Matrix, Matrix) {
-    let (x, y) = data::sine::sine_data(100);
-    println!("generated {} samples", x.len());
+fn create_dataset() -> (Matrix, Vec<f64>) {
+    let mut x: Matrix = Vec::new();
+    let mut y = Vec::new();
+
+    let root = Path::new("fashion_mnist_images/train");
+    for label in 0..10 {
+        let class_dir = root.join(label.to_string());
+
+        let mut paths: Vec<_> = fs::read_dir(&class_dir)
+            .expect("read class dir")
+            .filter_map(|e| e.ok().map(|e| e.path()))
+            .filter(|p| p.extension().is_some_and(|ext| ext == "png"))
+            .collect();
+        paths.sort();
+
+        for path in paths {
+            let features = decode_png(path);
+            x.push(features);
+            y.push(label as f64);
+        }
+    }
+
     (x, y)
 }
 
