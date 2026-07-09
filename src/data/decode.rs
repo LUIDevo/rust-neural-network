@@ -1,6 +1,7 @@
 use png;
 use std::fs::File;
 use std::io::BufReader;
+use crate::math::rng::Rng;
 
 pub fn decode_png(path: std::path::PathBuf) -> Vec<f64> {
     let file = BufReader::new(File::open(&path).expect("open png"));
@@ -13,4 +14,13 @@ pub fn decode_png(path: std::path::PathBuf) -> Vec<f64> {
         .iter()
         .map(|&b| (b as f64 - 127.5) / 127.5)
         .collect::<Vec<f64>>()
+}
+
+pub fn shuffle_dataset(x: &mut Vec<Vec<f64>>, y: &mut Vec<f64>, rng: &mut Rng) -> (Vec<Vec<f64>>, Vec<f64>){
+   for i in (1..y.len()).rev() {
+       let j = (rng.next_f64() * (i + 1) as f64) as usize;
+       x.swap(i, j);
+       y.swap(i, j);
+   }
+   (x.to_vec(), y.to_vec())
 }
