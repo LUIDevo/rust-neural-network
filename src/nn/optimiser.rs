@@ -1,5 +1,5 @@
-use crate::layer::LayerDense;
-use crate::matrix::Matrix;
+use crate::math::matrix::Matrix;
+use crate::nn::layer::LayerDense;
 
 pub trait Optimiser {
     fn update_params(&self, layer: &mut LayerDense);

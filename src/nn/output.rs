@@ -1,6 +1,6 @@
-use crate::matrix::{divide, row_sum};
+use crate::math::matrix::{divide, row_sum};
 
-use crate::matrix::Matrix;
+use crate::math::matrix::Matrix;
 
 pub enum Output {
     SoftmaxCCE(SoftmaxLossCategoricalCrossEntropy),

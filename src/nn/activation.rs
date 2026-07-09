@@ -1,4 +1,4 @@
-use crate::matrix::Matrix;
+use crate::math::matrix::Matrix;
 
 #[derive(Default)]
 pub struct ActivationReLU {

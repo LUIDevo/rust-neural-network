@@ -1,34 +1,27 @@
-mod activation;
-mod layer;
-mod matrix;
-mod optimiser;
-mod output;
-mod rng;
-mod sine;
-mod spiral;
+mod data;
+mod math;
+mod nn;
+#[cfg(test)]
 mod tests;
-mod vertical;
 
 // use std::process::Output;
 
-use crate::{
-    optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD},
-    output::LinearMeanSquaredError,
-};
-use activation::ActivationReLU;
-use layer::{Layer, LayerDense, LayerDropout};
-use output::{Output, Target};
-use rng::Rng;
+use crate::math::matrix::Matrix;
+use crate::math::rng::Rng;
+use crate::nn::activation::ActivationReLU;
+use crate::nn::layer::{Layer, LayerDense, LayerDropout};
+use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
+use crate::nn::output::{LinearMeanSquaredError, Output, Target};
 
-fn create_dataset() -> (matrix::Matrix, matrix::Matrix) {
-    let (x, y) = sine::sine_data(100);
+fn create_dataset() -> (Matrix, Matrix) {
+    let (x, y) = data::sine::sine_data(100);
     println!("generated {} samples", x.len());
     (x, y)
 }
 
 fn main() {
     let (x, y) = create_dataset();
-    let (test_x, test_y) = sine::sine_data(100);
+    let (test_x, test_y) = data::sine::sine_data(100);
     let mut rng = Rng::new(0);
     // define layers, activation, loss function
     let mut layers: Vec<Layer> = vec![

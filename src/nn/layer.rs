@@ -1,8 +1,8 @@
 //! Dense (fully-connected) layer.
 
-use crate::ActivationReLU;
-use crate::matrix::{Matrix, col_sum, dot, randn_matrix, sum, transpose};
-use crate::rng::Rng;
+use crate::math::matrix::{Matrix, col_sum, dot, randn_matrix, sum, transpose};
+use crate::math::rng::Rng;
+use crate::nn::activation::ActivationReLU;
 
 pub enum Layer {
     Dense(LayerDense),

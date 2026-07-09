@@ -1,6 +1,6 @@
-use crate::activation::ActivationReLU;
-use crate::matrix::dot;
-use crate::matrix::transpose;
+use crate::math::matrix::dot;
+use crate::math::matrix::transpose;
+use crate::nn::activation::ActivationReLU;
 
 #[test]
 fn dot_works() {

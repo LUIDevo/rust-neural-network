@@ -6,7 +6,9 @@ It also has the ability to use dropout, but for this use case it tanks the model
 
 Dev Roadmap:
 - [ ] Fashion-MNIST (Dense baseline)
+- [ ] Document accuracy and speed
 - [ ] Conv2D + Pool + Flatten
+- [ ] Switch to flat vec
 - [ ] GPU (wgpu)
 - [ ] BatchNorm / LayerNorm
 - [ ] Residual connections

@@ -5,8 +5,8 @@
 //! Each class is one arm of an intertwined spiral — not linearly
 //! separable, so it actually stresses the optimiser.
 
-use crate::matrix::Matrix;
-use crate::rng::Rng;
+use crate::math::matrix::Matrix;
+use crate::math::rng::Rng;
 
 /// Generate `samples` points per class for `classes` classes.
 ///

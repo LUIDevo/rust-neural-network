@@ -3,7 +3,7 @@
 //! A single continuous curve `y = sin(2*pi*x)` — the canonical toy
 //! regression problem for a linear-output + MSE model.
 
-use crate::matrix::Matrix;
+use crate::math::matrix::Matrix;
 
 /// Generate `samples` points along `y = sin(2*pi*x)`.
 ///

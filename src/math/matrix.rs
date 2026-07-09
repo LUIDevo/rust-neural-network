@@ -1,6 +1,6 @@
 // Linear alg, custom built replacement for numpy
 
-use crate::rng::Rng;
+use crate::math::rng::Rng;
 
 pub type Matrix = Vec<Vec<f64>>;
 

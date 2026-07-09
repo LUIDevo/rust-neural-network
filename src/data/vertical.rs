@@ -5,8 +5,8 @@
 //! Each class is a vertical Gaussian blob: x centered at `class / 3`,
 //! y centered at 0.5, both with stddev 0.1.
 
-use crate::matrix::Matrix;
-use crate::rng::Rng;
+use crate::math::matrix::Matrix;
+use crate::math::rng::Rng;
 
 /// Generate `samples` points per class for `classes` classes.
 ///
