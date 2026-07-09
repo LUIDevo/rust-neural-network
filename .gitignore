@@ -1,1 +1,3 @@
-/target
+target/
+fashion_mnist_images/
+fashion_mnist_images.zip
