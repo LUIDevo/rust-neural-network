@@ -10,15 +10,15 @@ use std::fs::{self, File};
 use std::path::Path;
 
 use crate::data::decode;
+use crate::data::decode::decode_png;
 use crate::math::matrix::Matrix;
 use crate::math::rng::Rng;
 use crate::nn::activation::ActivationReLU;
 use crate::nn::layer::{Layer, LayerDense, LayerDropout};
 use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
 use crate::nn::output::{LinearMeanSquaredError, Output, Target};
-use crate::data::decode::decode_png;
 
-fn create_dataset() -> (Matrix, Vec<f64>) {
+fn create_dataset(root: &Path) -> (Matrix, Vec<f64>) {
     let mut x: Matrix = Vec::new();
     let mut y = Vec::new();
 
@@ -44,8 +44,8 @@ fn create_dataset() -> (Matrix, Vec<f64>) {
 }
 
 fn main() {
-    let (x, y) = create_dataset();
-    let (test_x, test_y) = data::sine::sine_data(100);
+    let (x, y) = create_dataset(Path::new("fashion_mnist_images/train"));
+    let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"));
     let mut rng = Rng::new(0);
     // define layers, activation, loss function
     let mut layers: Vec<Layer> = vec![
