@@ -9,17 +9,16 @@ mod tests;
 use std::fs::{self, File};
 use std::path::Path;
 
+use crate::data::decode::{decode_png, shuffle_dataset};
 use crate::math::matrix::Matrix;
 use crate::math::rng::Rng;
 use crate::nn::activation::ActivationReLU;
 use crate::nn::layer::{Layer, LayerDense, LayerDropout};
-use crate::data::decode::{decode_png, shuffle_dataset};
 use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
 use crate::nn::output::{LinearMeanSquaredError, Output, Target};
 
-
-const EPOCHS: usize=2;
-const BATCH_SIZE: usize=128;
+const EPOCHS: usize = 2;
+const BATCH_SIZE: usize = 128;
 
 fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<f64>) {
     let mut x: Matrix = Vec::new();
@@ -46,7 +45,9 @@ fn main() {
     let (x, y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
     let mut steps = x.len() / BATCH_SIZE;
-    if steps * BATCH_SIZE < x.len() { steps+=1; }
+    if steps * BATCH_SIZE < x.len() {
+        steps += 1;
+    }
     // define layers, activation, loss function
     // let mut layers: Vec<Layer> = vec![
     // ];
@@ -61,7 +62,7 @@ fn main() {
     };
     let mut out;
     // training loop
-    for epoch in 0..EPOCHS { 
+    for epoch in 0..EPOCHS {
         for (batch_x, batch_y) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)) {
         }
     }
