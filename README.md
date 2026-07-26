@@ -1,8 +1,6 @@
-A simple classification model loosely based off of the model in NNFS, using few external libraries
+A repository for me to learn ML concepts in my favorite language: Rust.
 
-The model currently uses the Adam optimiser
-
-It also has the ability to use dropout, but for this use case it tanks the models accuracy so it's temporarily removed
+I built a simple classification model from scratch among some other things in this repo, but it is currently mid-rewrite to work for Fashion-MNIST. Currently the roadmap is for me to work my way through CNN's and transformers.
 
 Dev Roadmap:
 - [ ] Fashion-MNIST (Dense baseline)
