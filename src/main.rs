@@ -54,10 +54,10 @@ fn main() {
     let mut output = Output::LinearMSE(LinearMeanSquaredError::default());
     let target = Target::Dense(y);
     let mut optimiser = Adam {
-        lr: 0.01,
+        lr: 0.001,
         moment_decay: 0.9,
         variance_decay: 0.999,
-        lambda_reg: 0.001,
+        lambda_reg: 0.0,
         iterations: 0,
     };
     let mut out;
