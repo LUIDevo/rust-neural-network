@@ -52,7 +52,7 @@ fn main() {
     // let mut layers: Vec<Layer> = vec![
     // ];
     let mut output = Output::LinearMSE(LinearMeanSquaredError::default());
-    let target = Target::Dense(y);
+    // let target = Target::Dense(y);
     let mut optimiser = Adam {
         lr: 0.001,
         moment_decay: 0.9,
@@ -60,7 +60,7 @@ fn main() {
         lambda_reg: 0.0,
         iterations: 0,
     };
-    let mut out;
+    // let mut out;
     // training loop
     for epoch in 0..EPOCHS {
         for (batch_x, batch_y) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)) {
