@@ -13,7 +13,7 @@ use crate::data::decode::{decode_png, shuffle_dataset};
 use crate::math::matrix::Matrix;
 use crate::math::rng::Rng;
 use crate::nn::activation::ActivationReLU;
-use crate::fashion_mnist;
+use crate::data::fashion_mnist::prepare_dataset;
 use crate::nn::layer::{Layer, LayerDense, LayerDropout};
 use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
 use crate::nn::output::{LinearMeanSquaredError, Output, SoftmaxLossCategoricalCrossEntropy, Target};
@@ -44,8 +44,7 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<i32>) {
 
 fn main() {
     let mut rng = Rng::new(0);
-    if !Path::new("fashion_mnist_images/").is_dir() {
-    }
+    if !Path::new("fashion_mnist_images/").is_dir() { prepare_dataset(); }
     let (mut x, mut y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
     let mut steps = x.len() / BATCH_SIZE;
