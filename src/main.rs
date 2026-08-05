@@ -20,7 +20,7 @@ use crate::nn::output::{LinearMeanSquaredError, Output, Target};
 const EPOCHS: usize = 2;
 const BATCH_SIZE: usize = 128;
 
-fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<f64>) {
+fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<i32>) {
     let mut x: Matrix = Vec::new();
     let mut y = Vec::new();
     for label in 0..10 {
@@ -37,7 +37,8 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<f64>) {
             y.push(label);
         }
     }
-    shuffle_dataset(&mut x, &mut y, rng)
+    shuffle_dataset(&mut x, &mut y, rng);
+    (x, y)
 }
 
 fn main() {
