@@ -34,7 +34,7 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<f64>) {
         for path in paths {
             let features = decode_png(path);
             x.push(features);
-            y.push(label as f64);
+            y.push(label);
         }
     }
     shuffle_dataset(&mut x, &mut y, rng)
