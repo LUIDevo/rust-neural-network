@@ -15,7 +15,7 @@ use crate::math::rng::Rng;
 use crate::nn::activation::ActivationReLU;
 use crate::nn::layer::{Layer, LayerDense, LayerDropout};
 use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
-use crate::nn::output::{LinearMeanSquaredError, Output, Target};
+use crate::nn::output::{LinearMeanSquaredError, Output, SoftmaxLossCategoricalCrossEntropy, Target};
 
 const EPOCHS: usize = 2;
 const BATCH_SIZE: usize = 128;
@@ -43,16 +43,21 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<i32>) {
 
 fn main() {
     let mut rng = Rng::new(0);
-    let (x, y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
+    let (mut x, mut y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
     let mut steps = x.len() / BATCH_SIZE;
     if steps * BATCH_SIZE < x.len() {
         steps += 1;
     }
     // define layers, activation, loss function
-    // let mut layers: Vec<Layer> = vec![
-    // ];
-    let mut output = Output::LinearMSE(LinearMeanSquaredError::default());
+    let mut layers: Vec<Layer> = vec![
+        Layer::Dense(LayerDense::new(784, 128, &mut rng)),
+        Layer::ReLU(ActivationReLU::default()),
+        Layer::Dense(LayerDense::new(128, 128, &mut rng)),
+        Layer::ReLU(ActivationReLU::default()),
+        Layer::Dense(LayerDense::new(128, 10, &mut rng)),
+    ];
+    let mut output = Output::SoftmaxCCE(SoftmaxLossCategoricalCrossEntropy::default());
     // let target = Target::Dense(y);
     let mut optimiser = Adam {
         lr: 0.001,
@@ -64,7 +69,9 @@ fn main() {
     // let mut out;
     // training loop
     for epoch in 0..EPOCHS {
+        shuffle_dataset(&mut x, &mut y, &mut rng);
         for (batch_x, batch_y) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)) {
+            optimiser.pre_update();
         }
     }
     // test loop
