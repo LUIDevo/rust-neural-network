@@ -74,10 +74,24 @@ fn main() {
         let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
         for (step, (bx, by)) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
             let target = Target::Sparse(by.to_vec());
-            optimiser.pre_update();
-            let mut out = &bx;
+            // forward pass
+            let mut out = bx.to_vec();
             for layer in layers.iter_mut() {
-                out = layer.forward(out);
+                out = layer.forward(&out);
+            }
+            let (loss,acc) = output.forward(&out, &target);
+            ep_loss+=loss;
+            ep_acc+=acc;
+            // backward pass
+            let mut dvalues = output.backward(&target);
+            for layer in layers.iter_mut().rev() {
+                dvalues = layer.backward(&dvalues);
+            }
+            optimiser.pre_update();
+            for layer in layers.iter_mut() {
+                if let Layer::Dense(l) = layer {
+                    optimiser.update_params(l);
+                }
             }
         }
     }
