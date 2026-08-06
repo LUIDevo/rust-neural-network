@@ -20,7 +20,7 @@ use crate::nn::output::{
     LinearMeanSquaredError, Output, SoftmaxLossCategoricalCrossEntropy, Target,
 };
 
-const EPOCHS: usize = 2;
+const EPOCHS: usize = 10;
 const BATCH_SIZE: usize = 128;
 
 fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
@@ -71,26 +71,30 @@ fn main() {
         lambda_reg: 0.0,
         iterations: 0,
     };
-    // let mut out;
     // training loop
     for epoch in 0..EPOCHS {
         shuffle_dataset(&mut x, &mut y, &mut rng);
         let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
         for (step, (bx, by)) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
             let target = Target::Sparse(by.to_vec());
+
             // forward pass
             let mut out = bx.to_vec();
             for layer in layers.iter_mut() {
                 out = layer.forward(&out);
             }
+
             let (loss, acc) = output.forward(&out, &target);
             ep_loss += loss;
             ep_acc += acc;
+
             // backward pass
             let mut dvalues = output.backward(&target);
             for layer in layers.iter_mut().rev() {
                 dvalues = layer.backward(&dvalues);
             }
+
+            // optimiser update
             optimiser.pre_update();
             for layer in layers.iter_mut() {
                 if let Layer::Dense(l) = layer {
@@ -111,15 +115,19 @@ fn main() {
     // test loop
     let (mut t_loss, mut t_acc) = (0.0, 0.0);
     let test_steps = test_x.len().div_ceil(BATCH_SIZE);
+
     for (bx, by) in test_x.chunks(BATCH_SIZE).zip(test_y.chunks(BATCH_SIZE)) {
         let mut out = bx.to_vec();
+
         for layer in layers.iter_mut() {
             out = layer.forward(&out);
         }
+
         let (loss, acc) = output.forward(&out, &Target::Sparse(by.to_vec()));
         t_loss += loss;
         t_acc += acc;
     }
+
     println!(
         "TEST loss {:.4} acc {:.4}",
         t_loss / test_steps as f64,
