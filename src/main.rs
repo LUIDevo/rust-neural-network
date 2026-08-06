@@ -21,7 +21,7 @@ use crate::nn::output::{LinearMeanSquaredError, Output, SoftmaxLossCategoricalCr
 const EPOCHS: usize = 2;
 const BATCH_SIZE: usize = 128;
 
-fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<i32>) {
+fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
     let mut x: Matrix = Vec::new();
     let mut y = Vec::new();
     for label in 0..10 {
@@ -35,7 +35,7 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<i32>) {
         for path in paths {
             let features = decode_png(path);
             x.push(features);
-            y.push(label);
+            y.push(label as usize);
         }
     }
     shuffle_dataset(&mut x, &mut y, rng);
@@ -60,7 +60,6 @@ fn main() {
         Layer::Dense(LayerDense::new(128, 10, &mut rng)),
     ];
     let mut output = Output::SoftmaxCCE(SoftmaxLossCategoricalCrossEntropy::default());
-    // let target = Target::Dense(y);
     let mut optimiser = Adam {
         lr: 0.001,
         moment_decay: 0.9,
@@ -72,8 +71,14 @@ fn main() {
     // training loop
     for epoch in 0..EPOCHS {
         shuffle_dataset(&mut x, &mut y, &mut rng);
-        for (batch_x, batch_y) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)) {
+        let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
+        for (step, (bx, by)) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
+            let target = Target::Sparse(by.to_vec());
             optimiser.pre_update();
+            let mut out = &bx;
+            for layer in layers.iter_mut() {
+                out = layer.forward(out);
+            }
         }
     }
     // test loop
