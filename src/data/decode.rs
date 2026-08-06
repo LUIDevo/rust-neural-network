@@ -16,11 +16,7 @@ pub fn decode_png(path: std::path::PathBuf) -> Vec<f64> {
         .collect::<Vec<f64>>()
 }
 
-pub fn shuffle_dataset(
-    x: &mut Vec<Vec<f64>>,
-    y: &mut Vec<usize>,
-    rng: &mut Rng,
-) {
+pub fn shuffle_dataset(x: &mut Vec<Vec<f64>>, y: &mut Vec<usize>, rng: &mut Rng) {
     for i in (1..y.len()).rev() {
         let j = (rng.next_f64() * (i + 1) as f64) as usize;
         x.swap(i, j);

@@ -10,13 +10,15 @@ use std::fs::{self, File};
 use std::path::Path;
 
 use crate::data::decode::{decode_png, shuffle_dataset};
+use crate::data::fashion_mnist::prepare_dataset;
 use crate::math::matrix::Matrix;
 use crate::math::rng::Rng;
 use crate::nn::activation::ActivationReLU;
-use crate::data::fashion_mnist::prepare_dataset;
 use crate::nn::layer::{Layer, LayerDense, LayerDropout};
 use crate::nn::optimiser::{AdaGrad, Adam, Optimiser, RMSProp, SGD};
-use crate::nn::output::{LinearMeanSquaredError, Output, SoftmaxLossCategoricalCrossEntropy, Target};
+use crate::nn::output::{
+    LinearMeanSquaredError, Output, SoftmaxLossCategoricalCrossEntropy, Target,
+};
 
 const EPOCHS: usize = 2;
 const BATCH_SIZE: usize = 128;
@@ -44,7 +46,9 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
 
 fn main() {
     let mut rng = Rng::new(0);
-    if !Path::new("fashion_mnist_images/").is_dir() { prepare_dataset(); }
+    if !Path::new("fashion_mnist_images/").is_dir() {
+        prepare_dataset().expect("prepare dataset");
+    }
     let (mut x, mut y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
     let mut steps = x.len() / BATCH_SIZE;
@@ -79,9 +83,9 @@ fn main() {
             for layer in layers.iter_mut() {
                 out = layer.forward(&out);
             }
-            let (loss,acc) = output.forward(&out, &target);
-            ep_loss+=loss;
-            ep_acc+=acc;
+            let (loss, acc) = output.forward(&out, &target);
+            ep_loss += loss;
+            ep_acc += acc;
             // backward pass
             let mut dvalues = output.backward(&target);
             for layer in layers.iter_mut().rev() {
@@ -106,7 +110,8 @@ fn main() {
     }
     // test loop
     let (mut t_loss, mut t_acc) = (0.0, 0.0);
-    for (test_steps, (bx, by)) in test_x.chunks(BATCH_SIZE).zip(test_y.chunks(BATCH_SIZE)).enumerate() {
+    let test_steps = test_x.len().div_ceil(BATCH_SIZE);
+    for (bx, by) in test_x.chunks(BATCH_SIZE).zip(test_y.chunks(BATCH_SIZE)) {
         let mut out = bx.to_vec();
         for layer in layers.iter_mut() {
             out = layer.forward(&out);
