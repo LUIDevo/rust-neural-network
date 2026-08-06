@@ -5,7 +5,7 @@ I built a simple classification model from scratch among some other things in th
 Also, I will implement wgpu, and I learned that GPU programming is much more complicated than I thought. It involves staging and buffers and alot of other things that I didn't realise I needed. 
 
 Dev Roadmap:
-- [ ] Fashion-MNIST (Dense baseline)
+- [x] Fashion-MNIST (Dense baseline)
 - [ ] Document accuracy and speed
 - [ ] Conv2D + Pool + Flatten
 - [ ] Switch to flat vec
