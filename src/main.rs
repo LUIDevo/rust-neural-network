@@ -8,6 +8,7 @@ mod tests;
 
 use std::fs::{self, File};
 use std::path::Path;
+use std::time::{Instant,Duration};
 
 use crate::data::decode::{decode_png, shuffle_dataset};
 use crate::data::fashion_mnist::prepare_dataset;
@@ -72,6 +73,7 @@ fn main() {
         iterations: 0,
     };
     // training loop
+    let mut start = Instant::now();
     for epoch in 0..EPOCHS {
         shuffle_dataset(&mut x, &mut y, &mut rng);
         let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
@@ -112,10 +114,12 @@ fn main() {
             ep_acc / steps as f64
         );
     }
+    println!("Training time: {:?}", start.elapsed());
     // test loop
     let (mut t_loss, mut t_acc) = (0.0, 0.0);
     let test_steps = test_x.len().div_ceil(BATCH_SIZE);
 
+    start = Instant::now();
     for (bx, by) in test_x.chunks(BATCH_SIZE).zip(test_y.chunks(BATCH_SIZE)) {
         let mut out = bx.to_vec();
 
@@ -133,4 +137,6 @@ fn main() {
         t_loss / test_steps as f64,
         t_acc / test_steps as f64
     );
+
+    println!("Test time: {:?}", start.elapsed());
 }
