@@ -7,12 +7,12 @@ Also, I will implement wgpu, and I learned that GPU programming is much more com
 Dev Roadmap:
 - [x] Fashion-MNIST (Dense baseline)
 - [ ] Document accuracy and speed
+- [ ] Switch to flat vec + f32
 - [ ] Conv2D + Pool + Flatten
-- [ ] Switch to flat vec
+- [ ] Fashion-MNIST v2 (CNN + CPU, compare to baseline)
 - [ ] GPU (wgpu)
-- [ ] BatchNorm / LayerNorm
-- [ ] Residual connections
 - [ ] Fashion-MNIST v2 (CNN + GPU, compare to baseline)
 - [ ] Self-attention from scratch
+- [ ] LayerNorm + Residual connections
 - [ ] Multi-head attention + positional encoding
 - [ ] Minimal transformer block
