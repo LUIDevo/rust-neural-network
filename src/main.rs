@@ -74,7 +74,7 @@ fn main() {
     };
     // training loop
     let mut start = Instant::now();
-    for epoch in 0..EPOCHS {
+    for epoch in 0..=EPOCHS {
         shuffle_dataset(&mut x, &mut y, &mut rng);
         let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
         for (step, (bx, by)) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
