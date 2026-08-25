@@ -2,7 +2,11 @@
 
 use crate::math::rng::Rng;
 
-pub type Matrix = Vec<Vec<f64>>;
+pub struct Matrix {
+    data: Vec<f32>,
+    rows: usisze,
+    cols: usize,
+}
 
 pub fn randn_matrix(rows: usize, cols: usize, stddev: f64, rng: &mut Rng) -> Matrix {
     (0..rows)
