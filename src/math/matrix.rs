@@ -4,8 +4,18 @@ use crate::math::rng::Rng;
 
 pub struct Matrix {
     data: Vec<f32>,
-    rows: usisze,
+    rows: usize,
     cols: usize,
+}
+
+impl Matrix {
+    pub fn new(data: Vec<f32>, rows: usize, cols: usize) -> Self {
+        assert_eq!(data.len(), rows * cols);
+        Matrix { data, rows, cols }
+    }
+    pub fn zeros(rows: usize, cols: usize) -> Self {
+        Matrix { data: vec![0.0; rows*cols], rows, cols }
+    }
 }
 
 pub fn randn_matrix(rows: usize, cols: usize, stddev: f64, rng: &mut Rng) -> Matrix {
