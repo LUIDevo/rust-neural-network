@@ -41,9 +41,9 @@ pub fn dot(a: &Matrix, b: &Matrix) -> Matrix {
     Matrix::new(out, m, p)
 }
 
-pub fn sum(a: &Matrix, b: &Vec<f64>) -> Matrix {
+pub fn sum(a: &Matrix, b: &Vec<f32>) -> Matrix {
     let cols = a.cols();
-    let data = a.iter().enumerate()
+    let data = a.data.iter().enumerate()
         .map(|(i,v)| v+b[i%cols])
         .collect();
     Matrix::new(data, a.rows(), cols)
@@ -61,12 +61,10 @@ pub fn transpose(a: &Matrix) -> Matrix {
 }
 
 pub fn row_sum(a: &Matrix) -> Vec<f64> {
-    let (n, m) = (a.len(), a[0].len());
-    let mut out = vec![0.0; n];
-    for r in 0..n {
-        for c in 0..m {
-            out[r] += a[r][c];
-        }
+    let (r, c) = (a.rows, a.cols);
+    let mut out = vec![0.0; r];
+    for x in a.data {
+        out[i%c] += x;
     }
     out
 }
