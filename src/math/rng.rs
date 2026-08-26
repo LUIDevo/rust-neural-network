@@ -4,7 +4,7 @@
 pub struct Rng(u64);
 
 impl Rng {
-    pub fn new(seed: u64) -> Self {
+    pub fn new(seed: u32) -> Self {
         // Avoid the all-zero state, which xorshift can't escape.
         Rng(if seed == 0 { 0x9E3779B97F4A7C15 } else { seed })
     }
