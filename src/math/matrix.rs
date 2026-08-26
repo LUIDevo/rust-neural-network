@@ -16,6 +16,8 @@ impl Matrix {
     pub fn zeros(rows: usize, cols: usize) -> Self {
         Matrix { data: vec![0.0; rows*cols], rows, cols }
     }
+    pub fn rows(&self) -> usize { self.rows }
+    pub fn cols(&self) -> usize { self.cols }
 }
 
 pub fn randn_matrix(rows: usize, cols: usize, stddev: f64, rng: &mut Rng) -> Matrix {
@@ -25,20 +27,21 @@ pub fn randn_matrix(rows: usize, cols: usize, stddev: f64, rng: &mut Rng) -> Mat
 }
 
 pub fn dot(a: &Matrix, b: &Matrix) -> Matrix {
-    let (m, n, p) = (a.len(), b.len(), b[0].len());
-    let mut out = vec![vec![0.0; p]; m];
+    let (m, n, p) = (a.rows(), b.rows(), b.cols());
+    let mut out = vec![0.0; m*p];
     for i in 0..m {
-        for j in 0..n {
-            let aij = a[i][j];
-            for k in 0..p {
-                out[i][k] += aij * b[j][k];
+        for k in 0..n {
+            let aik = a.data[i*n+k];
+            for j in 0..p {
+                out[i*p+j] += aik * b.data[k*p+j];
             }
         }
     }
-    out
+    Matrix::new(out, m, p)
 }
 
 pub fn sum(a: &Matrix, b: &Vec<f64>) -> Matrix {
+    let cols = a.cols();
     a.iter()
         .map(|row| row.iter().zip(b).map(|(z, bias)| z + bias).collect())
         .collect()
