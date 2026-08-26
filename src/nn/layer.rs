@@ -13,17 +13,17 @@ pub enum Layer {
 pub struct LayerDense {
     pub inputs: Matrix,
     pub weights: Matrix,
-    pub biases: Vec<f64>,
+    pub biases: Vec<f32>,
     pub dweights: Matrix,
-    pub dbiases: Vec<f64>,
+    pub dbiases: Vec<f32>,
     pub v_weights: Matrix,
-    pub v_biases: Vec<f64>,
+    pub v_biases: Vec<f32>,
     pub cache_weights: Matrix,
-    pub cache_biases: Vec<f64>,
+    pub cache_biases: Vec<f32>,
 }
 
 pub struct LayerDropout {
-    pub rate: f64,
+    pub rate: f32,
     pub mask: Matrix,
     pub rng: Rng,
 }
@@ -48,14 +48,14 @@ impl Layer {
 impl LayerDense {
     pub fn new(n_inputs: usize, n_neurons: usize, rng: &mut Rng) -> Self {
         LayerDense {
-            inputs: Vec::new(),
+            inputs: Matrix::zeros(0,0),
             weights: randn_matrix(n_inputs, n_neurons, 0.1, rng),
             biases: vec![0.0; n_neurons],
-            dweights: vec![vec![0.0; n_neurons]; n_inputs],
+            dweights: Matrix::zeros(n_inputs,n_neurons),
             dbiases: vec![0.0; n_neurons],
-            v_weights: vec![vec![0.0; n_neurons]; n_inputs],
+            v_weights: Matrix::zeros(n_inputs,n_neurons),
             v_biases: vec![0.0; n_neurons],
-            cache_weights: vec![vec![0.0; n_neurons]; n_inputs],
+            cache_weights: Matrix::zeros(n_inputs,n_neurons),
             cache_biases: vec![0.0; n_neurons],
         }
     }
