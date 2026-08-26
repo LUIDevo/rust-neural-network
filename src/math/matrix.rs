@@ -42,9 +42,10 @@ pub fn dot(a: &Matrix, b: &Matrix) -> Matrix {
 
 pub fn sum(a: &Matrix, b: &Vec<f64>) -> Matrix {
     let cols = a.cols();
-    a.iter()
-        .map(|row| row.iter().zip(b).map(|(z, bias)| z + bias).collect())
-        .collect()
+    let data = a.iter().enumerate()
+        .map(|(i,v)| v+b[i%cols])
+        .collect();
+    Matrix::new(data, a.rows(), cols)
 }
 
 pub fn transpose(a: &Matrix) -> Matrix {
