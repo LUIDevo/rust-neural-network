@@ -2,6 +2,7 @@
 
 use crate::math::rng::Rng;
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Matrix {
     data: Vec<f32>,
     rows: usize,
@@ -49,14 +50,14 @@ pub fn sum(a: &Matrix, b: &Vec<f64>) -> Matrix {
 }
 
 pub fn transpose(a: &Matrix) -> Matrix {
-    let (r, c) = (a.len(), a[0].len());
-    let mut out = vec![vec![0.0; r]; c];
+    let (r,c)=(a.rows(), a.cols());
+    let mut out = vec![0.0; r*c];
     for i in 0..r {
-        for j in 0..c {
-            out[j][i] = a[i][j];
+        for j in 0..c{
+            out[j*r+i]=a.data[i*c+j];
         }
     }
-    out
+    Matrix::new(out, c,r)
 }
 
 pub fn row_sum(a: &Matrix) -> Vec<f64> {
