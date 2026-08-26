@@ -9,22 +9,22 @@ impl Rng {
         Rng(if seed == 0 { 0x9E3779B97F4A7C15 } else { seed })
     }
 
-    /// Uniform f64 in [0, 1).
-    pub fn next_f64(&mut self) -> f64 {
+    /// Uniform f32 in [0, 1).
+    pub fn next_f32(&mut self) -> f32 {
         let mut x = self.0;
         x ^= x << 13;
         x ^= x >> 7;
         x ^= x << 17;
         self.0 = x;
-        // Top 53 bits -> uniform double.
-        (x >> 11) as f64 / (1u64 << 53) as f64
+        // Top 24 bits -> uniform float.
+        (x >> 40) as f32 / (1u64 << 24) as f32
     }
 
     /// Standard normal sample via Box-Muller.
-    pub fn next_gaussian(&mut self) -> f64 {
+    pub fn next_gaussian(&mut self) -> f32 {
         // u1 must be > 0 for ln; nudge away from 0.
-        let u1 = self.next_f64().max(f64::MIN_POSITIVE);
-        let u2 = self.next_f64();
-        (-2.0 * u1.ln()).sqrt() * (2.0 * std::f64::consts::PI * u2).cos()
+        let u1 = self.next_f32().max(f32::MIN_POSITIVE);
+        let u2 = self.next_f32();
+        (-2.0 * u1.ln()).sqrt() * (2.0 * std::f32::consts::PI * u2).cos()
     }
 }

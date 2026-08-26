@@ -21,11 +21,13 @@ impl Matrix {
     pub fn cols(&self) -> usize { self.cols }
 }
 
-pub fn randn_matrix(rows: usize, cols: usize, stddev: f64, rng: &mut Rng) -> Matrix {
-    (0..rows)
-        .map(|_| (0..cols).map(|_| rng.next_gaussian() * stddev).collect())
-        .collect()
-}
+pub fn randn_matrix(rows: usize, cols: usize, stddev: f32, rng: &mut Rng) -> Matrix {
+       let mut data = Vec::with_capacity(rows * cols);
+       for _ in 0..rows * cols {
+           data.push(rng.next_gaussian() * stddev);
+       }
+       Matrix::new(data, rows, cols)
+   }
 
 pub fn dot(a: &Matrix, b: &Matrix) -> Matrix {
     let (m, n, p) = (a.rows(), b.rows(), b.cols());
@@ -78,9 +80,13 @@ pub fn col_sum(a: &Matrix) -> Vec<f32> {
     out
 }
 
-pub fn divide(a: &Matrix, b: &Vec<f64>) -> Matrix {
-    a.iter()
-        .zip(b)
-        .map(|(m, n)| m.into_iter().map(|l| l / n).collect())
-        .collect()
-}
+ pub fn divide(a: &Matrix, b: &[f32]) -> Matrix {
+       let cols = a.cols;
+       let data = a
+           .data
+           .iter()
+           .enumerate()
+           .map(|(i, v)| v / b[i / cols])   
+           .collect();
+       Matrix::new(data, a.rows, cols)
+ }
