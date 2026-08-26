@@ -60,11 +60,20 @@ pub fn transpose(a: &Matrix) -> Matrix {
     Matrix::new(out, c,r)
 }
 
-pub fn row_sum(a: &Matrix) -> Vec<f64> {
+pub fn row_sum(a: &Matrix) -> Vec<f32> {
     let (r, c) = (a.rows, a.cols);
     let mut out = vec![0.0; r];
-    for x in a.data {
+    for (i,x) in a.data.iter().enumerate() {
         out[i%c] += x;
+    }
+    out
+}
+
+pub fn col_sum(a: &Matrix) -> Vec<f32> {
+    let (r, c) = (a.rows, a.cols);
+    let mut out = vec![0.0; c];
+    for (i,x) in a.data.iter().enumerate() {
+        out[i%r] += x;
     }
     out
 }
@@ -74,15 +83,4 @@ pub fn divide(a: &Matrix, b: &Vec<f64>) -> Matrix {
         .zip(b)
         .map(|(m, n)| m.into_iter().map(|l| l / n).collect())
         .collect()
-}
-
-pub fn col_sum(a: &Matrix) -> Vec<f64> {
-    let cols = a[0].len();
-    let mut out = vec![0.0; cols];
-    for row in a {
-        for (j, &v) in row.iter().enumerate() {
-            out[j] += v;
-        }
-    }
-    out
 }
