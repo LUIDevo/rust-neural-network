@@ -1,6 +1,5 @@
 use crate::math::matrix::Matrix;
 
-#[derive(Default)]
 pub struct ActivationReLU {
     pub inputs: Matrix,
 }
@@ -8,14 +7,12 @@ pub struct ActivationReLU {
 impl ActivationReLU {
     pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
         self.inputs = inputs.clone();
-        inputs
+        Matrix::new(inputs.data
             .iter()
             .map(|x| {
-                x.into_iter()
-                    .map(|y| if *y < 0.0 { 0.0 } else { *y })
-                    .collect()
+                    if *x < 0.0 { 0.0 } else { *x }
             })
-            .collect()
+            .collect(), inputs.rows(), inputs.cols())
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
         self.inputs
