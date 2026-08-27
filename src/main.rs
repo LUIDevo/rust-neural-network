@@ -8,7 +8,7 @@ mod tests;
 
 use std::fs::{self, File};
 use std::path::Path;
-use std::time::{Instant,Duration};
+use std::time::{Duration, Instant};
 
 use crate::data::decode::{decode_png, shuffle_dataset};
 use crate::data::fashion_mnist::prepare_dataset;

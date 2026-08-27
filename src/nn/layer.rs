@@ -48,14 +48,14 @@ impl Layer {
 impl LayerDense {
     pub fn new(n_inputs: usize, n_neurons: usize, rng: &mut Rng) -> Self {
         LayerDense {
-            inputs: Matrix::zeros(0,0),
+            inputs: Matrix::zeros(0, 0),
             weights: randn_matrix(n_inputs, n_neurons, 0.1, rng),
             biases: vec![0.0; n_neurons],
-            dweights: Matrix::zeros(n_inputs,n_neurons),
+            dweights: Matrix::zeros(n_inputs, n_neurons),
             dbiases: vec![0.0; n_neurons],
-            v_weights: Matrix::zeros(n_inputs,n_neurons),
+            v_weights: Matrix::zeros(n_inputs, n_neurons),
             v_biases: vec![0.0; n_neurons],
-            cache_weights: Matrix::zeros(n_inputs,n_neurons),
+            cache_weights: Matrix::zeros(n_inputs, n_neurons),
             cache_biases: vec![0.0; n_neurons],
         }
     }
@@ -74,7 +74,7 @@ impl LayerDropout {
     pub fn new(rate: f32, seed: u32) -> Self {
         LayerDropout {
             rate: 1.0 - rate,
-            mask: Matrix::zeros(0,0),
+            mask: Matrix::zeros(0, 0),
             rng: Rng::new(seed),
         }
     }
