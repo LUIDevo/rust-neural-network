@@ -13,7 +13,7 @@ pub enum Target {
 }
 
 impl Output {
-    pub fn forward(&mut self, inputs: &Matrix, target: &Target) -> (f64, f64) {
+    pub fn forward(&mut self, inputs: &Matrix, target: &Target) -> (f32, f32) {
         match (self, target) {
             (Output::SoftmaxCCE(o), Target::Sparse(y)) => o.forward(inputs, y),
             (Output::LinearMSE(o), Target::Dense(y)) => o.forward(inputs, y),
@@ -69,16 +69,16 @@ impl SoftmaxLossCategoricalCrossEntropy {
             .count();
         correct as f64 / samples as f64
     }
-    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f64 {
+    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f32 {
         let exp_probabilities = probabilities
             .into_iter()
             .zip(y_true)
             .map(|(x, y)| -(x[*y].min(1.0 - 1e-7).max(1e-7)).ln())
-            .collect::<Vec<f64>>(); // get true probability, clip, -np.log()
-        let len = exp_probabilities.len() as f64;
-        exp_probabilities.into_iter().sum::<f64>() / len
+            .collect::<Vec<f32>>(); // get true probability, clip, -np.log()
+        let len = exp_probabilities.len() as f32;
+        exp_probabilities.into_iter().sum::<f32>() / len
     }
-    pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> (f64, f64) {
+    pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> (f32, f32) {
         let probabilities = softmax(inputs);
         self.output = probabilities.clone();
         (
@@ -98,7 +98,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
                     .enumerate()
                     .map(|(i, &x)| {
                         let v = if i == *y { x - 1.0 } else { x };
-                        v / length as f64
+                        v / length as f32
                     })
                     .collect()
             })
@@ -108,10 +108,10 @@ impl SoftmaxLossCategoricalCrossEntropy {
 
 impl LinearMeanSquaredError {
     pub fn calculate_accuracy(&self, predictions: &Matrix, y_true: &Matrix) -> f64 {
-        let flat: Vec<f64> = y_true.iter().flatten().copied().collect();
-        let n = flat.len() as f64;
-        let mean = flat.iter().sum::<f64>() / n;
-        let std = (flat.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / n).sqrt();
+        let flat: Vec<f32> = y_true.iter().flatten().copied().collect();
+        let n = flat.len() as f32;
+        let mean = flat.iter().sum::<f32>() / n;
+        let std = (flat.iter().map(|v| (v - mean).powi(2)).sum::<f32>() / n).sqrt();
         let precision = std / 250.0;
 
         let mut total = 0.0;
@@ -126,20 +126,20 @@ impl LinearMeanSquaredError {
         }
         correct / total
     }
-    pub fn calculate_loss(&self, predictions: &Matrix, y_true: &Matrix) -> f64 {
-        let samples = predictions.len() as f64;
+    pub fn calculate_loss(&self, predictions: &Matrix, y_true: &Matrix) -> f32 {
+        let samples = predictions.len() as f32;
         predictions
             .iter()
             .zip(y_true)
             .map(|(p, y)| {
-                let outputs = p.len() as f64;
+                let outputs = p.len() as f32;
                 p.iter()
                     .zip(y)
                     .map(|(pi, yi)| (pi - yi).powi(2))
-                    .sum::<f64>()
+                    .sum::<f32>()
                     / outputs
             })
-            .sum::<f64>()
+            .sum::<f32>()
             / samples
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f64, f64) {
