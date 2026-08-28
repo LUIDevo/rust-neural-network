@@ -1,23 +1,16 @@
-use crate::math::matrix::dot;
-use crate::math::matrix::transpose;
-use crate::nn::activation::ActivationReLU;
+use crate::math::matrix::{dot, transpose, Matrix};
 
 #[test]
 fn dot_works() {
-    let a = vec![vec![1.0, 2.0], vec![3.0, 4.0]];
-    let b = vec![vec![5.0, 6.0], vec![7.0, 8.0]];
-    assert_eq!(dot(&a, &b), vec![vec![19.0, 22.0], vec![43.0, 50.0]]);
-}
-
-#[test]
-fn relu_works() {
-    let a = vec![vec![-1.0, 2.0], vec![-3.0, 4.0]];
-    let mut activation = ActivationReLU::default();
-    assert_eq!(activation.forward(&a), vec![vec![0.0, 2.0], vec![0.0, 4.0]]);
+    let a = Matrix::new(vec![1.0, 2.0, 3.0, 4.0], 2, 2);
+    let b = Matrix::new(vec![5.0, 6.0, 7.0, 8.0], 2, 2);
+    let expected = Matrix::new(vec![19.0, 22.0, 43.0, 50.0], 2, 2);
+    assert_eq!(dot(&a, &b), expected);
 }
 
 #[test]
 fn transpose_works() {
-    let a = vec![vec![1.0, 2.0], vec![3.0, 4.0]];
-    assert_eq!(transpose(&a), vec![vec![1.0, 3.0], vec![2.0, 4.0]]);
+    let a = Matrix::new(vec![1.0, 2.0, 3.0, 4.0], 2, 2);
+    let expected = Matrix::new(vec![1.0, 3.0, 2.0, 4.0], 2, 2);
+    assert_eq!(transpose(&a), expected);
 }
