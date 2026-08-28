@@ -97,10 +97,10 @@ impl LayerDropout {
             .collect(), r, c)
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
-        dvalues
+        Matrix::new(dvalues.data
             .iter()
-            .zip(&self.mask)
-            .map(|(dv, m)| dv.iter().zip(m).map(|(dvi, m)| dvi * m).collect())
-            .collect()
+            .zip(&self.mask.data)
+            .map(|(dv, m)| dv*m)
+            .collect(), dvalues.rows(), dvalues.cols())
     }
 }
