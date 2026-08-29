@@ -81,7 +81,7 @@ fn main() {
             let target = Target::Sparse(by.to_vec());
 
             // forward pass
-            let mut out = bx.to_vec();
+            let mut out = Matrix::new(bx.to_vec(), bx.len() / by.len(), by.len());
             for layer in layers.iter_mut() {
                 out = layer.forward(&out);
             }
@@ -121,7 +121,7 @@ fn main() {
 
     start = Instant::now();
     for (bx, by) in test_x.chunks(BATCH_SIZE).zip(test_y.chunks(BATCH_SIZE)) {
-        let mut out = bx.to_vec();
+        let mut out = Matrix::new(bx.to_vec(), bx.len() / by.len(), by.len());
 
         for layer in layers.iter_mut() {
             out = layer.forward(&out);
