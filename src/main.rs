@@ -52,8 +52,8 @@ fn main() {
     }
     let (mut x, mut y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
-    let mut steps = x.len() / BATCH_SIZE;
-    if steps * BATCH_SIZE < x.len() {
+    let mut steps = x.data.len() / BATCH_SIZE;
+    if steps * BATCH_SIZE < x.data.len() {
         steps += 1;
     }
     // define layers, activation, loss function

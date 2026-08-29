@@ -1,5 +1,6 @@
 use crate::math::matrix::Matrix;
 
+#[derive(Default)]
 pub struct ActivationReLU {
     pub inputs: Matrix,
 }

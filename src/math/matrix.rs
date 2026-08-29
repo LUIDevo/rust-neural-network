@@ -2,7 +2,7 @@
 
 use crate::math::rng::Rng;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct Matrix {
     pub data: Vec<f32>,
     rows: usize,
