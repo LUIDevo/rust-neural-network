@@ -24,7 +24,7 @@ use crate::nn::output::{
 const EPOCHS: usize = 10;
 const BATCH_SIZE: usize = 128;
 
-fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
+fn create_dataset(root: &Path, rng: &mut Rng) -> (Vec<f32>, Vec<usize>) {
     let mut x: Vec<f32> = Vec::new();
     let mut y = Vec::new();
     for label in 0..10 {
@@ -42,7 +42,7 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
         }
     }
     shuffle_dataset(&mut x, &mut y, rng);
-    (Matrix::new(x.clone(), x.len()/y.len(), y.len()), y)
+    (x,y)
 }
 
 fn main() {
@@ -52,8 +52,8 @@ fn main() {
     }
     let (mut x, mut y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
-    let mut steps = x.data.len() / BATCH_SIZE;
-    if steps * BATCH_SIZE < x.data.len() {
+    let mut steps = x.len() / BATCH_SIZE;
+    if steps * BATCH_SIZE < x.len() {
         steps += 1;
     }
     // define layers, activation, loss function
