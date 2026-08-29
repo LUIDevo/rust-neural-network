@@ -75,15 +75,15 @@ fn main() {
     // training loop
     let mut start = Instant::now();
     for epoch in 0..=EPOCHS {
-        shuffle_dataset(&mut x.data, &mut y, &mut rng);
+        shuffle_dataset(&mut x, &mut y, &mut rng);
         let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
-        for (step, (bx, by)) in x.data.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
+        for (step, (bx, by)) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
             let target = Target::Sparse(by.to_vec());
 
             // forward pass
             let mut out = bx.to_vec();
             for layer in layers.iter_mut() {
-                out = layer.forward(&out.data);
+                out = layer.forward(&out);
             }
 
             let (loss, acc) = output.forward(&out, &target);
@@ -110,8 +110,8 @@ fn main() {
         }
         println!(
             "epoch {epoch}: loss {:.4} acc {:.4}",
-            ep_loss / steps as f64,
-            ep_acc / steps as f64
+            ep_loss / steps as f32,
+            ep_acc / steps as f32
         );
     }
     println!("Training time: {:?}", start.elapsed());
@@ -134,8 +134,8 @@ fn main() {
 
     println!(
         "TEST loss {:.4} acc {:.4}",
-        t_loss / test_steps as f64,
-        t_acc / test_steps as f64
+        t_loss / test_steps as f32,
+        t_acc / test_steps as f32
     );
 
     println!("Test time: {:?}", start.elapsed());
