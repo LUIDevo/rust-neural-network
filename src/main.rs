@@ -25,7 +25,7 @@ const EPOCHS: usize = 10;
 const BATCH_SIZE: usize = 128;
 
 fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
-    let mut x: Matrix = Vec::new();
+    let mut x: Vec<f32> = Vec::new();
     let mut y = Vec::new();
     for label in 0..10 {
         let class_dir = root.join(label.to_string());
@@ -36,13 +36,13 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Matrix, Vec<usize>) {
             .collect();
         paths.sort();
         for path in paths {
-            let features = decode_png(path);
-            x.push(features);
+            let mut features = decode_png(path);
+            x.append(&mut features);
             y.push(label as usize);
         }
     }
     shuffle_dataset(&mut x, &mut y, rng);
-    (x, y)
+    (Matrix::new(x.clone(), x.len()/y.len(), y.len()), y)
 }
 
 fn main() {
