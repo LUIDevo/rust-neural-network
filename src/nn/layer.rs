@@ -71,7 +71,7 @@ impl LayerDense {
 }
 
 impl LayerDropout {
-    pub fn new(rate: f32, seed: u32) -> Self {
+    pub fn new(rate: f32, seed: u64) -> Self {
         LayerDropout {
             rate: 1.0 - rate,
             mask: Matrix::zeros(0, 0),
