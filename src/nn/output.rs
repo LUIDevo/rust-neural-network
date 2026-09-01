@@ -40,21 +40,20 @@ pub struct SoftmaxLossCategoricalCrossEntropy {
 }
 
 fn softmax(inputs: &Matrix) -> Matrix {
-    let exp_values: Matrix = inputs
-        .iter()
+    let exp_values: Matrix = Matrix::new(inputs.data.chunks(inputs.cols())
         .map(|r| {
             let max = r.iter().copied().fold(f32::NEG_INFINITY, f32::max);
-            r.into_iter().map(|c| (c - max).exp()).collect()
+            r.into_iter().map(|c| (c - max).exp())
         })
-        .collect();
-    divide(&exp_values, &row_sum(&exp_values))
+        .collect(), inputs.rows(), inputs.cols());
+    divide(&exp_values.data, &row_sum(&exp_values.data))
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
     pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f32 {
         // find mean of percentage correct predictions
-        let samples = probabilities.len();
-        let correct = probabilities
+        let samples = probabilities.data.len();
+        let correct = probabilities.data
             .into_iter()
             .zip(y_true)
             .filter(|(p, y)| {
