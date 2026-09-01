@@ -43,7 +43,7 @@ fn softmax(inputs: &Matrix) -> Matrix {
     let exp_values: Matrix = inputs
         .iter()
         .map(|r| {
-            let max = r.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+            let max = r.iter().copied().fold(f32::NEG_INFINITY, f32::max);
             r.into_iter().map(|c| (c - max).exp()).collect()
         })
         .collect();
@@ -51,7 +51,7 @@ fn softmax(inputs: &Matrix) -> Matrix {
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
-    pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f64 {
+    pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f32 {
         // find mean of percentage correct predictions
         let samples = probabilities.len();
         let correct = probabilities
@@ -67,7 +67,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
                 pred == **y
             })
             .count();
-        correct as f64 / samples as f64
+        correct as f32 / samples as f32
     }
     pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f32 {
         let exp_probabilities = probabilities
@@ -107,7 +107,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
 }
 
 impl LinearMeanSquaredError {
-    pub fn calculate_accuracy(&self, predictions: &Matrix, y_true: &Matrix) -> f64 {
+    pub fn calculate_accuracy(&self, predictions: &Matrix, y_true: &Matrix) -> f32 {
         let flat: Vec<f32> = y_true.iter().flatten().copied().collect();
         let n = flat.len() as f32;
         let mean = flat.iter().sum::<f32>() / n;
@@ -142,7 +142,7 @@ impl LinearMeanSquaredError {
             .sum::<f32>()
             / samples
     }
-    pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f64, f64) {
+    pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f32, f32) {
         self.output = inputs.clone();
         (
             self.calculate_loss(inputs, &y_true),
@@ -150,12 +150,12 @@ impl LinearMeanSquaredError {
         )
     }
     pub fn backward(&mut self, y_true: &Matrix) -> Matrix {
-        let samples = self.output.len() as f64;
+        let samples = self.output.len() as f32;
         self.output
             .iter()
             .zip(y_true)
             .map(|(p, y)| {
-                let outputs = p.len() as f64;
+                let outputs = p.len() as f32;
                 p.iter()
                     .zip(y)
                     .map(|(pi, yi)| 2.0 * (pi - yi) / outputs / samples)
