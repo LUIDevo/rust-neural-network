@@ -39,14 +39,15 @@ pub struct SoftmaxLossCategoricalCrossEntropy {
     output: Matrix,
 }
 
-fn softmax(inputs: &Matrix) -> Matrix {
-    let exp_values: Matrix = Matrix::new(inputs.data.chunks(inputs.cols())
-        .map(|r| {
-            let max = r.iter().copied().fold(f32::NEG_INFINITY, f32::max);
-            r.into_iter().map(|c| (c - max).exp())
-        })
-        .collect(), inputs.rows(), inputs.cols());
-    divide(&exp_values.data, &row_sum(&exp_values.data))
+fn softmax(inputs: &Matrix) -> Vec<f32> {
+    let mut out = Vec::with_capacity(inputs.data.len());
+    for row in inputs.data.chunks(inputs.cols()) { 
+        let max = row.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+        let exps: Vec<f32> = row.iter().map(|c| (c-max).exp()).collect();
+        let sum: f32 = exps.iter().sum();
+        out.extend(exps.iter().map(|e| e/sum));
+    }
+    out
 }
 
 impl SoftmaxLossCategoricalCrossEntropy {
