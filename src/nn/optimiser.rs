@@ -21,10 +21,10 @@ pub struct RMSProp {
 }
 
 pub struct Adam {
-    pub lr: f64,
-    pub moment_decay: f64,
-    pub variance_decay: f64,
-    pub lambda_reg: f64,
+    pub lr: f32,
+    pub moment_decay: f32,
+    pub variance_decay: f32,
+    pub lambda_reg: f32,
     pub iterations: i32,
 }
 
@@ -41,11 +41,8 @@ impl Optimiser for Adam {
             .v_weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(vw, dw)| {
-                vw.iter()
-                    .zip(dw)
-                    .map(|(&vwi, &dwi)| self.moment_decay * vwi + (1.0 - self.moment_decay) * dwi)
-                    .collect()
+            .map(|(&vw, dw)| {
+                    self.moment_decay * vw + (1.0 - self.moment_decay) * dw
             })
             .collect();
         layer.v_biases = layer
