@@ -53,12 +53,12 @@ fn softmax(inputs: &Matrix) -> Vec<f32> {
 impl SoftmaxLossCategoricalCrossEntropy {
     pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f32 {
         // find mean of percentage correct predictions
-        let mut count:f32 = 0.0;
+        let mut count= 0;
         for (row, y) in probabilities.data.chunks(probabilities.cols()).zip(y_true) {
             let pred = row.iter().copied().fold(f32::NEG_INFINITY, f32::max);
-            if pred==*y as f32 { count+=1.0; }
+            if pred==*y as f32 { count+=1; }
         }
-        count/probabilities.data.len() as f32
+        count as f32/probabilities.data.len() as f32
         // let samples = probabilities.data.len();
         // let correct = probabilities.data
         //     .into_iter()
