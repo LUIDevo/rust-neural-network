@@ -80,12 +80,7 @@ impl SoftmaxLossCategoricalCrossEntropy {
         for (i,row) in probabilities.data.chunks(probabilities.cols()).enumerate() {
             sum+=-(row[y_true[i]].min(1.0 - 1e-7).max(1e-7)).ln()
         }
-        // let exp_probabilities = probabilities.data
-        //     .into_iter()
-        //     .zip(y_true)
-        //     .map(|(x, y)| -(x[*y].min(1.0 - 1e-7).max(1e-7)).ln())
-        //     .collect::<Vec<f32>>(); // get true probability, clip, -np.log()
-        sum / y_true.len()
+        sum / y_true.len() as f32
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> (f32, f32) {
         let probabilities = softmax(inputs.clone().data);
