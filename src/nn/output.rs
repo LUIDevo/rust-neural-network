@@ -39,7 +39,7 @@ pub struct SoftmaxLossCategoricalCrossEntropy {
     output: Matrix,
 }
 
-fn softmax(inputs: &Vec<f32>) -> Vec<f32> {
+fn softmax(inputs: &Matrix) -> Vec<f32> {
     let mut out = Vec::with_capacity(inputs.data.len());
     for row in inputs.data.chunks(inputs.cols()) { 
         let max = row.iter().copied().fold(f32::NEG_INFINITY, f32::max);
@@ -76,13 +76,16 @@ impl SoftmaxLossCategoricalCrossEntropy {
         // correct as f32 / samples as f32
     }
     pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f32 {
-        let exp_probabilities = probabilities
-            .into_iter()
-            .zip(y_true)
-            .map(|(x, y)| -(x[*y].min(1.0 - 1e-7).max(1e-7)).ln())
-            .collect::<Vec<f32>>(); // get true probability, clip, -np.log()
-        let len = exp_probabilities.len() as f32;
-        exp_probabilities.into_iter().sum::<f32>() / len
+        let mut sum: f32=0.0;
+        for (i,row) in probabilities.data.chunks(probabilities.cols()).enumerate() {
+            sum+=-(row[y_true[i]].min(1.0 - 1e-7).max(1e-7)).ln()
+        }
+        // let exp_probabilities = probabilities.data
+        //     .into_iter()
+        //     .zip(y_true)
+        //     .map(|(x, y)| -(x[*y].min(1.0 - 1e-7).max(1e-7)).ln())
+        //     .collect::<Vec<f32>>(); // get true probability, clip, -np.log()
+        sum / y_true.len()
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> (f32, f32) {
         let probabilities = softmax(inputs.clone().data);
