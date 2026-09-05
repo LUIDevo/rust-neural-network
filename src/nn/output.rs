@@ -83,20 +83,28 @@ impl SoftmaxLossCategoricalCrossEntropy {
     pub fn backward(&mut self, y_true: &Vec<usize>) -> Matrix {
         // subtract 1 from the correct y_true for each row in self.output
         // return (divide by len(self.output))
+        let mut out = Matrix::new(vec![0.0; self.output.data.len()], self.output.rows(), self.output.cols());
         let length = self.output.data.len();
-        self.output
-            .iter()
-            .zip(y_true)
-            .map(|(r, y)| {
-                r.iter()
-                    .enumerate()
-                    .map(|(i, &x)| {
-                        let v = if i == *y { x - 1.0 } else { x };
-                        v / length as f32
-                    })
-                    .collect()
-            })
-            .collect()
+        for (ri,row) in self.output.data.chunks(out.cols()).enumerate() {
+            for (i,&x) in row.iter().enumerate() {
+                let v = if i == y_true[ri] {x-1.0} else { x};
+                out.data.push( v / length as f32)
+            }
+        }
+        out
+        // self.output
+        //     .iter()
+        //     .zip(y_true)
+        //     .map(|(r, y)| {
+        //         r.iter()
+        //             .enumerate()
+        //             .map(|(i, &x)| {
+        //                 let v = if i == *y { x - 1.0 } else { x };
+        //                 v / length as f32
+        //             })
+        //             .collect()
+        //     })
+        //     .collect()
     }
 }
 
