@@ -55,27 +55,17 @@ impl SoftmaxLossCategoricalCrossEntropy {
         // find mean of percentage correct predictions
         let mut count= 0;
         for (row, y) in probabilities.data.chunks(probabilities.cols()).zip(y_true) {
-            let pred = row.iter().copied().fold(f32::NEG_INFINITY, f32::max);
-            if pred==*y as f32 { count+=1; }
+            let pred = row
+               .iter()
+               .enumerate()
+               .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+               .map(|(i, _)| i)
+               .unwrap();
+            if pred==*y { count+=1; }
         }
-        count as f32/probabilities.data.len() as f32
-        // let samples = probabilities.data.len();
-        // let correct = probabilities.data
-        //     .into_iter()
-        //     .zip(y_true)
-        //     .filter(|(p, y)| {
-        //         let pred = p
-        //             .iter()
-        //             .enumerate()
-        //             .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-        //             .map(|(i, _)| i)
-        //             .unwrap();
-        //         pred == **y
-        //     })
-        //     .count();
-        // correct as f32 / samples as f32
+        count as f32/y_true.len() as f32
     }
-    pub fn calculate_loss(&self, probabilities: Matrix, y_true: &Vec<usize>) -> f32 {
+    pub fn calculate_loss(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f32 {
         let mut sum: f32=0.0;
         for (i,row) in probabilities.data.chunks(probabilities.cols()).enumerate() {
             sum+=-(row[y_true[i]].min(1.0 - 1e-7).max(1e-7)).ln()
@@ -83,17 +73,17 @@ impl SoftmaxLossCategoricalCrossEntropy {
         sum / y_true.len() as f32
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Vec<usize>) -> (f32, f32) {
-        let probabilities = softmax(inputs.clone().data);
-        self.output = probabilities.clone();
+        let probabilities = softmax(inputs);
+        self.output = Matrix::new(probabilities.clone(), inputs.rows(), inputs.cols());
         (
-            self.calculate_loss(probabilities.clone(), &y_true),
-            self.calculate_accuracy(&probabilities, &y_true),
+            self.calculate_loss(&self.output, &y_true),
+            self.calculate_accuracy(&self.output, &y_true),
         )
     }
     pub fn backward(&mut self, y_true: &Vec<usize>) -> Matrix {
         // subtract 1 from the correct y_true for each row in self.output
         // return (divide by len(self.output))
-        let length = self.output.len();
+        let length = self.output.data.len();
         self.output
             .iter()
             .zip(y_true)
