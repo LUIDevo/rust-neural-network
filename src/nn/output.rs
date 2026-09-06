@@ -97,22 +97,21 @@ impl SoftmaxLossCategoricalCrossEntropy {
 
 impl LinearMeanSquaredError {
     pub fn calculate_accuracy(&self, predictions: &Matrix, y_true: &Matrix) -> f32 {
-        let flat: Vec<f32> = y_true.iter().flatten().copied().collect();
-        let n = flat.len() as f32;
-        let mean = flat.iter().sum::<f32>() / n;
-        let std = (flat.iter().map(|v| (v - mean).powi(2)).sum::<f32>() / n).sqrt();
+        let n = y_true.data.len() as f32;
+        let mean = y_true.data.iter().sum::<f32>() / n;
+        let std = (y_true.data.iter().map(|v| (v - mean).powi(2)).sum::<f32>() / n).sqrt();
         let precision = std / 250.0;
 
-        let mut total = 0.0;
-        let mut correct = 0.0;
-        for (p, y) in predictions.iter().zip(y_true) {
-            for (pi, yi) in p.iter().zip(y) {
-                total += 1.0;
-                if (pi - yi).abs() < precision {
-                    correct += 1.0;
-                }
-            }
-        }
+        let total = y_true.data.len() as f32;
+        let correct= predictions.data.iter().zip(&y_true.data).filter(|(p, y)| (*p-*y).abs() < precision).count() as f32;
+        // for (p, y) in predictions.data.iter().zip(y_true) {
+        //     for (pi, yi) in p.iter().zip(y) {
+        //         total += 1.0;
+        //         if (pi - yi).abs() < precision {
+        //             correct += 1.0;
+        //         }
+        //     }
+        // }
         correct / total
     }
     pub fn calculate_loss(&self, predictions: &Matrix, y_true: &Matrix) -> f32 {
