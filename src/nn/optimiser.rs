@@ -6,18 +6,18 @@ pub trait Optimiser {
 }
 
 pub struct SGD {
-    pub lr: f64,
-    pub lr_decay: f64,
-    pub momentum: f64,
+    pub lr: f32,
+    pub lr_decay: f32,
+    pub momentum: f32,
 }
 
 pub struct AdaGrad {
-    pub lr: f64,
+    pub lr: f32,
 }
 
 pub struct RMSProp {
-    pub lr: f64,
-    pub lr_decay: f64,
+    pub lr: f32,
+    pub lr_decay: f32,
 }
 
 pub struct Adam {
@@ -116,12 +116,7 @@ impl Optimiser for RMSProp {
             .cache_weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(cw, dw)| {
-                cw.iter()
-                    .zip(dw)
-                    .map(|(&cwi, &dwi)| self.lr_decay * cwi + (1.0 - self.lr_decay) * dwi.powi(2))
-                    .collect()
-            })
+            .map(|(cw, dw)| self.lr_decay * cw + (1.0 - self.lr_decay) * dw.powi(2))
             .collect();
         layer.cache_biases = layer
             .cache_biases
@@ -129,19 +124,22 @@ impl Optimiser for RMSProp {
             .zip(&layer.dbiases)
             .map(|(cb, db)| cb * self.lr_decay + (1.0 - self.lr_decay) * db.powi(2))
             .collect();
-        layer.weights = layer
-            .weights
-            .iter()
-            .zip(&layer.dweights)
-            .zip(&layer.cache_weights)
-            .map(|((w, dw), cw)| {
-                w.iter()
-                    .zip(dw)
-                    .zip(cw)
-                    .map(|((&wi, &dwi), &cwi)| wi - dwi * self.lr / (cwi.sqrt() + 1e-7))
-                    .collect()
-            })
-            .collect();
+        // layer.weights = layer
+        //     .weights
+        //     .iter()
+        //     .zip(&layer.dweights)
+        //     .zip(&layer.cache_weights)
+        //     .map(|((w, dw), cw)| {
+        //         w.iter()
+        //             .zip(dw)
+        //             .zip(cw)
+        //             .map(|((&wi, &dwi), &cwi)| wi - dwi * self.lr / (cwi.sqrt() + 1e-7))
+        //             .collect()
+        //     })
+        //     .collect();
+        for i in 0..layer.weights.data.len() { 
+            layer.weights.data[i]=layer.weights.data[i] - layer.dweights[i] * self.lr / (layer.cache_weights[i].sqrt() + 1e-7);
+        }
         layer.biases = layer
             .biases
             .iter()
@@ -158,12 +156,7 @@ impl Optimiser for AdaGrad {
             .cache_weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(cw, dw)| {
-                cw.iter()
-                    .zip(dw)
-                    .map(|(&cwi, &dwi)| cwi + dwi.powi(2))
-                    .collect()
-            })
+            .map(|(cw, dw)| cw + dw.powi(2))
             .collect();
         layer.cache_biases = layer
             .cache_biases
@@ -172,7 +165,7 @@ impl Optimiser for AdaGrad {
             .map(|(cb, db)| cb + db.powi(2))
             .collect();
         layer.weights = layer
-            .weights
+            .weights.data
             .iter()
             .zip(&layer.dweights)
             .zip(&layer.cache_weights)
@@ -208,12 +201,7 @@ impl Optimiser for SGD {
             .v_weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(vw, dw)| {
-                vw.iter()
-                    .zip(dw)
-                    .map(|(&vwi, &dwi)| self.momentum * vwi - self.lr * dwi)
-                    .collect()
-            })
+            .map(|(vw, dw)| self.momentum * vw - self.lr * dw)
             .collect();
         layer.v_biases = layer
             .v_biases
