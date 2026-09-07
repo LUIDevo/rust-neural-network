@@ -77,7 +77,7 @@ pub fn row_sum(a: &Matrix) -> Vec<f32> {
     let (r, c) = (a.rows, a.cols);
     let mut out = vec![0.0; r];
     for (i, x) in a.data.iter().enumerate() {
-        out[i % c] += x;
+        out[i / c] += x;
     }
     out
 }
@@ -86,7 +86,7 @@ pub fn col_sum(a: &Matrix) -> Vec<f32> {
     let (r, c) = (a.rows, a.cols);
     let mut out = vec![0.0; c];
     for (i, x) in a.data.iter().enumerate() {
-        out[i % r] += x;
+        out[i % c] += x;
     }
     out
 }

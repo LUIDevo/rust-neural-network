@@ -52,10 +52,8 @@ fn main() {
     }
     let (mut x, mut y) = create_dataset(Path::new("fashion_mnist_images/train"), &mut rng);
     let (test_x, test_y) = create_dataset(Path::new("fashion_mnist_images/test"), &mut rng);
-    let mut steps = x.len() / BATCH_SIZE;
-    if steps * BATCH_SIZE < x.len() {
-        steps += 1;
-    }
+    let features = x.len() / y.len(); // pixels per image
+    let steps = y.len().div_ceil(BATCH_SIZE);
     // define layers, activation, loss function
     let mut layers: Vec<Layer> = vec![
         Layer::Dense(LayerDense::new(784, 128, &mut rng)),
@@ -77,11 +75,15 @@ fn main() {
     for epoch in 0..=EPOCHS {
         shuffle_dataset(&mut x, &mut y, &mut rng);
         let (mut ep_loss, mut ep_acc) = (0.0, 0.0);
-        for (step, (bx, by)) in x.chunks(BATCH_SIZE).zip(y.chunks(BATCH_SIZE)).enumerate() {
+        for (step, (by, bx)) in y
+            .chunks(BATCH_SIZE)
+            .zip(x.chunks(features * BATCH_SIZE))
+            .enumerate()
+        {
             let target = Target::Sparse(by.to_vec());
 
-            // forward pass
-            let mut out = Matrix::new(bx.to_vec(), bx.len() / by.len(), by.len());
+            // forward pass: `by.len()` images, `features` pixels each
+            let mut out = Matrix::new(bx.to_vec(), by.len(), features);
             for layer in layers.iter_mut() {
                 out = layer.forward(&out);
             }
@@ -117,11 +119,15 @@ fn main() {
     println!("Training time: {:?}", start.elapsed());
     // test loop
     let (mut t_loss, mut t_acc) = (0.0, 0.0);
-    let test_steps = test_x.len().div_ceil(BATCH_SIZE);
+    let test_features = test_x.len() / test_y.len(); // pixels per image
+    let test_steps = test_y.len().div_ceil(BATCH_SIZE);
 
     start = Instant::now();
-    for (bx, by) in test_x.chunks(BATCH_SIZE).zip(test_y.chunks(BATCH_SIZE)) {
-        let mut out = Matrix::new(bx.to_vec(), bx.len() / by.len(), by.len());
+    for (by, bx) in test_y
+        .chunks(BATCH_SIZE)
+        .zip(test_x.chunks(test_features * BATCH_SIZE))
+    {
+        let mut out = Matrix::new(bx.to_vec(), by.len(), test_features);
 
         for layer in layers.iter_mut() {
             out = layer.forward(&out);

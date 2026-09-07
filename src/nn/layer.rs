@@ -55,11 +55,12 @@ impl LayerDense {
             inputs: Matrix::zeros(0, 0),
             weights: randn_matrix(n_inputs, n_neurons, 0.1, rng),
             biases: vec![0.0; n_neurons],
-            dweights: vec![0.0; n_neurons],
+            // gradient/optimiser buffers mirror the shapes they accumulate
+            dweights: vec![0.0; n_inputs * n_neurons],
             dbiases: vec![0.0; n_neurons],
-            v_weights: vec![0.0; n_neurons],
+            v_weights: vec![0.0; n_inputs * n_neurons],
             v_biases: vec![0.0; n_neurons],
-            cache_weights: vec![0.0; n_neurons],
+            cache_weights: vec![0.0; n_inputs * n_neurons],
             cache_biases: vec![0.0; n_neurons],
         }
     }
