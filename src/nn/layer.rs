@@ -11,15 +11,17 @@ pub enum Layer {
 }
 
 pub struct LayerDense {
+    pub rows: usize,
+    pub cols: usize,
     pub inputs: Matrix,
     pub weights: Matrix,
-    pub biases: Matrix,
-    pub dweights: Matrix,
-    pub dbiases: Matrix,
-    pub v_weights: Matrix,
-    pub v_biases: Matrix,
+    pub biases: Vec<f32>,
+    pub dweights: Vec<f32>,
+    pub dbiases: Vec<f32>,
+    pub v_weights: Vec<f32>,
+    pub v_biases: Vec<f32>,
     pub cache_weights: Matrix,
-    pub cache_biases: Matrix
+    pub cache_biases: Vec<f32>,
 }
 
 pub struct LayerDropout {
@@ -48,15 +50,17 @@ impl Layer {
 impl LayerDense {
     pub fn new(n_inputs: usize, n_neurons: usize, rng: &mut Rng) -> Self {
         LayerDense {
-            inputs: Matrix::zeros(n_inputs, n_neurons),
+            rows: n_inputs,
+            cols: n_neurons,
+            inputs: Matrix::zeros(0, 0),
             weights: randn_matrix(n_inputs, n_neurons, 0.1, rng),
-            biases: Matrix::zeros(n_inputs, n_neurons),
-            dweights: Matrix::zeros(n_inputs, n_neurons),
-            dbiases: Matrix::zeros(n_inputs, n_neurons),
-            v_weights: Matrix::zeros(n_inputs, n_neurons),
-            v_biases: Matrix::zeros(n_inputs, n_neurons),
+            biases: vec![0.0; n_neurons],
+            dweights: vec![0.0; n_neurons],
+            dbiases: vec![0.0; n_neurons],
+            v_weights: vec![0.0; n_neurons],
+            v_biases: vec![0.0; n_neurons],
             cache_weights: Matrix::zeros(n_inputs, n_neurons),
-            cache_biases: Matrix::zeros(n_inputs, n_neurons),
+            cache_biases: vec![0.0; n_neurons],
         }
     }
     pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
@@ -64,7 +68,7 @@ impl LayerDense {
         sum(&dot(&inputs, &self.weights), &self.biases)
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
-        self.dweights = dot(&transpose(&self.inputs), &dvalues).data;
+        self.dweights = dot(&transpose(&self.inputs), &dvalues);
         self.dbiases = col_sum(&dvalues);
         return dot(&dvalues, &transpose(&self.weights));
     }
