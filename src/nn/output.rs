@@ -149,6 +149,14 @@ impl LinearMeanSquaredError {
     }
     pub fn backward(&mut self, y_true: &Matrix) -> Matrix {
         let samples = self.output.data.len() as f32;
+        let mut out = vec![0.0; y_true.data.len()];
+        let row_length = self.output.cols();
+        for (x,row) in self.output.data.chunks(self.output.cols()).enumerate() { 
+            for (y, item) in row.iter().enumerate() { 
+                out.push(2.0 * (item - y_true.data[x*row_length+y]) / row_length as f32 / samples)
+            }
+        }
+        Matrix::new(out, y_true.rows(), y_true.cols())
         // self.output
         //     .iter()
         //     .zip(y_true)
