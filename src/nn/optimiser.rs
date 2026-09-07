@@ -70,49 +70,36 @@ impl Optimiser for Adam {
             .zip(&layer.dbiases)
             .map(|(cb, db)| cb * self.variance_decay + (1.0 - self.variance_decay) * db.powi(2))
             .collect();
-        let vw_hat: Matrix = layer
+        let vw_hat: Vec<f32> = layer
             .v_weights
             .iter()
-            .map(|vw| {
-                vw.iter()
-                    .map(|vwi| vwi / (1.0 - (self.moment_decay).powi(self.iterations)))
-                    .collect()
-            })
+            .map(|vw| vw / (1.0 - (self.moment_decay).powi(self.iterations)))
             .collect();
-        let vb_hat: Vec<f64> = layer
+        let vb_hat: Vec<f32> = layer
             .v_biases
             .iter()
             .map(|vb| vb / (1.0 - (self.moment_decay).powi(self.iterations)))
             .collect();
-        let cw_hat: Matrix = layer
+        let cw_hat: Vec<f32> = layer
             .cache_weights
             .iter()
-            .map(|cw| {
-                cw.iter()
-                    .map(|cwi| cwi / (1.0 - (self.variance_decay).powi(self.iterations)))
-                    .collect()
-            })
+            .map(|cw| cw / (1.0 - (self.variance_decay).powi(self.iterations)))
             .collect();
-        let cb_hat: Vec<f64> = layer
+        let cb_hat: Vec<f32> = layer
             .cache_biases
             .iter()
             .map(|cb| cb / (1.0 - (self.variance_decay).powi(self.iterations)))
             .collect();
-        layer.weights = layer
-            .weights
-            .iter()
-            .zip(vw_hat)
-            .zip(cw_hat)
-            .map(|((w, vwh), cwh)| {
-                w.iter()
-                    .zip(vwh)
-                    .zip(cwh)
-                    .map(|((wi, vwhi), cwhi)| {
-                        wi - vwhi * self.lr / (cwhi.sqrt() + 1e-7) - self.lambda_reg * wi
-                    })
-                    .collect()
-            })
-            .collect();
+        for i in 0..layer.weights.data.len() { 
+            layer.weights.data[i]=layer.weights.data[i] - vw_hat[i] * self.lr / (cw_hat[i].sqrt() + 1e-7) - self.lambda_reg * layer.weights.data[i];
+        }
+        // layer.weights = layer
+        //     .weights.data
+        //     .iter_mut()
+        //     .zip(vw_hat)
+        //     .zip(cw_hat)
+        //     .map(|((w, vwh), cwh): ((&f32, f32), f32)| w - vwh * self.lr / (cwh.sqrt() + 1e-7) - self.lambda_reg * w)
+        //     .collect();
         layer.biases = layer
             .biases
             .iter()

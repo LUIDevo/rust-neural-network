@@ -20,7 +20,7 @@ pub struct LayerDense {
     pub dbiases: Vec<f32>,
     pub v_weights: Vec<f32>,
     pub v_biases: Vec<f32>,
-    pub cache_weights: Matrix,
+    pub cache_weights: Vec<f32>,
     pub cache_biases: Vec<f32>,
 }
 
@@ -59,7 +59,7 @@ impl LayerDense {
             dbiases: vec![0.0; n_neurons],
             v_weights: vec![0.0; n_neurons],
             v_biases: vec![0.0; n_neurons],
-            cache_weights: Matrix::zeros(n_inputs, n_neurons),
+            cache_weights: vec![0.0; n_neurons],
             cache_biases: vec![0.0; n_neurons],
         }
     }
