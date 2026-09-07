@@ -115,20 +115,30 @@ impl LinearMeanSquaredError {
         correct / total
     }
     pub fn calculate_loss(&self, predictions: &Matrix, y_true: &Matrix) -> f32 {
-        let samples = predictions.len() as f32;
-        predictions
-            .iter()
-            .zip(y_true)
-            .map(|(p, y)| {
-                let outputs = p.len() as f32;
-                p.iter()
-                    .zip(y)
-                    .map(|(pi, yi)| (pi - yi).powi(2))
-                    .sum::<f32>()
-                    / outputs
-            })
-            .sum::<f32>()
-            / samples
+        let samples = predictions.data.len() as f32;
+        let mut sum:f32 = 0.0;
+        for (x,row) in predictions.data.chunks(predictions.cols()).enumerate() {
+            let cols = row.len() as f32;
+            let mut sub_sum: f32= 0.0;
+            for (y, col) in row.iter().enumerate() {
+                sub_sum+=(col - y_true.data[x*(y_true.cols())+y]).powi(2);
+            }
+            sum+= sub_sum / cols;
+        }
+        sum / samples
+        // predictions
+        //     .iter()
+        //     .zip(y_true)
+        //     .map(|(p, y)| {
+        //         let outputs = p.len() as f32;
+        //         p.iter()
+        //             .zip(y)
+        //             .map(|(pi, yi)| (pi - yi).powi(2))
+        //             .sum::<f32>()
+        //             / outputs
+        //     })
+        //     .sum::<f32>()
+        //     / samples
     }
     pub fn forward(&mut self, inputs: &Matrix, y_true: &Matrix) -> (f32, f32) {
         self.output = inputs.clone();
@@ -138,17 +148,17 @@ impl LinearMeanSquaredError {
         )
     }
     pub fn backward(&mut self, y_true: &Matrix) -> Matrix {
-        let samples = self.output.len() as f32;
-        self.output
-            .iter()
-            .zip(y_true)
-            .map(|(p, y)| {
-                let outputs = p.len() as f32;
-                p.iter()
-                    .zip(y)
-                    .map(|(pi, yi)| 2.0 * (pi - yi) / outputs / samples)
-                    .collect()
-            })
-            .collect()
+        let samples = self.output.data.len() as f32;
+        // self.output
+        //     .iter()
+        //     .zip(y_true)
+        //     .map(|(p, y)| {
+        //         let outputs = p.len() as f32;
+        //         p.iter()
+        //             .zip(y)
+        //             .map(|(pi, yi)| 2.0 * (pi - yi) / outputs / samples)
+        //             .collect()
+        //     })
+        //     .collect()
     }
 }
