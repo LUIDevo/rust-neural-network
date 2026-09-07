@@ -11,24 +11,23 @@ use crate::math::rng::Rng;
 /// Generate `samples` points per class for `classes` classes.
 ///
 /// Returns `(X, y)`:
-/// - `X`: `(samples * classes) x 2` matrix of positions, grouped by class.
+/// - `X`: row-major flat `Vec<f32>` of `samples * classes` positions, grouped
+///   by class, wrapped in a `(samples * classes) x 2` [`Matrix`].
 /// - `y`: matching class label per row.
 pub fn vertical_data(samples: usize, classes: usize, seed: u64) -> (Matrix, Vec<usize>) {
     let mut rng = Rng::new(seed);
     let n = samples * classes;
-    let mut x = Vec::with_capacity(n);
+    let mut x = Vec::with_capacity(n * 2);
     let mut y = Vec::with_capacity(n);
 
     for class in 0..classes {
-        let cx = class as f64 / 3.0;
+        let cx = class as f32 / 3.0;
         for _ in 0..samples {
-            x.push(vec![
-                rng.next_gaussian() * 0.1 + cx,
-                rng.next_gaussian() * 0.1 + 0.5,
-            ]);
+            x.push(rng.next_gaussian() * 0.1 + cx);
+            x.push(rng.next_gaussian() * 0.1 + 0.5);
             y.push(class);
         }
     }
 
-    (x, y)
+    (Matrix::new(x, n, 2), y)
 }

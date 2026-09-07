@@ -68,7 +68,7 @@ impl LayerDense {
         sum(&dot(&inputs, &self.weights), &self.biases)
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
-        self.dweights = dot(&transpose(&self.inputs), &dvalues);
+        self.dweights = dot(&transpose(&self.inputs), &dvalues).data;
         self.dbiases = col_sum(&dvalues);
         return dot(&dvalues, &transpose(&self.weights));
     }
