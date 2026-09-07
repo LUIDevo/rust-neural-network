@@ -164,19 +164,23 @@ impl Optimiser for AdaGrad {
             .zip(&layer.dbiases)
             .map(|(cb, db)| cb + db.powi(2))
             .collect();
-        layer.weights = layer
-            .weights.data
-            .iter()
-            .zip(&layer.dweights)
-            .zip(&layer.cache_weights)
-            .map(|((w, dw), cw)| {
-                w.iter()
-                    .zip(dw)
-                    .zip(cw)
-                    .map(|((&wi, &dwi), &cwi)| wi - dwi * self.lr / (cwi.sqrt() + 1e-7))
-                    .collect()
-            })
-            .collect();
+
+        for i in 0..layer.weights.data.len() { 
+            layer.weights.data[i]=layer.weights.data[i] - layer.dweights[i] * self.lr / (layer.cache_weights[i].sqrt() + 1e-7);
+        }
+        // layer.weights = layer
+        //     .weights.data
+        //     .iter()
+        //     .zip(&layer.dweights)
+        //     .zip(&layer.cache_weights)
+        //     .map(|((w, dw), cw)| {
+        //         w.iter()
+        //             .zip(dw)
+        //             .zip(cw)
+        //             .map(|((&wi, &dwi), &cwi)| wi - dwi * self.lr / (cwi.sqrt() + 1e-7))
+        //             .collect()
+        //     })
+        //     .collect();
         layer.biases = layer
             .biases
             .iter()
@@ -209,12 +213,15 @@ impl Optimiser for SGD {
             .zip(&layer.dbiases)
             .map(|(vb, db)| self.momentum * vb - self.lr * db)
             .collect();
-        layer.weights = layer
-            .weights
-            .iter()
-            .zip(&layer.v_weights)
-            .map(|(w, dv)| w.iter().zip(dv).map(|(&wi, &dvi)| wi + dvi).collect())
-            .collect();
+        for i in 0..layer.weights.data.len() { 
+            layer.weights.data[i]=layer.weights.data[i] + layer.v_weights[i];
+        }
+        // layer.weights = layer
+        //     .weights
+        //     .iter()
+        //     .zip(&layer.v_weights)
+        //     .map(|(w, dv)| w.iter().zip(dv).map(|(&wi, &dvi)| wi + dvi).collect())
+        //     .collect();
         layer.biases = layer
             .biases
             .iter()
