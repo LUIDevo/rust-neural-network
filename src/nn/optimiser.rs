@@ -51,19 +51,19 @@ impl Optimiser for Adam {
             .zip(&layer.dbiases)
             .map(|(vb, db)| self.moment_decay * vb + (1.0 - self.moment_decay) * db)
             .collect();
-        layer.cache_weights = layer
-            .cache_weights
-            .iter()
-            .zip(&layer.dweights)
-            .map(|(cw, dw)| {
-                cw.iter()
-                    .zip(dw)
-                    .map(|(&cwi, &dwi)| {
-                        self.variance_decay * cwi + (1.0 - self.variance_decay) * dwi.powi(2)
-                    })
-                    .collect()
-            })
-            .collect();
+        // layer.cache_weights = layer
+        //     .cache_weights
+        //     .iter()
+        //     .zip(&layer.dweights)
+        //     .map(|(cw, dw)| {
+        //         cw.iter()
+        //             .zip(dw)
+        //             .map(|(&cwi, &dwi)| {
+        //                 self.variance_decay * cwi + (1.0 - self.variance_decay) * dwi.powi(2)
+        //             })
+        //             .collect()
+        //     })
+        //     .collect();
         layer.cache_biases = layer
             .cache_biases
             .iter()
