@@ -7,7 +7,7 @@ Also, I will implement wgpu, and I learned that GPU programming is much more com
 Dev Roadmap:
 - [x] Fashion-MNIST (Dense baseline)
 - [x] Document accuracy and speed
-- [ ] Switch to flat vec + f32
+- [x] Switch to flat vec + f32
 - [ ] Conv2D + Pool + Flatten
 - [ ] Fashion-MNIST v2 (CNN + CPU, compare to baseline)
 - [ ] GPU (wgpu)
