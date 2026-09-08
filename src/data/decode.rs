@@ -17,9 +17,14 @@ pub fn decode_png(path: std::path::PathBuf) -> Vec<f32> {
 }
 
 pub fn shuffle_dataset(x: &mut Vec<f32>, y: &mut Vec<usize>, rng: &mut Rng) {
+    let cols = x.len() / y.len(); // features per sample
+    assert_eq!(x.len(), cols * y.len(), "feature vector and labels out of sync");
     for i in (1..y.len()).rev() {
         let j = (rng.next_f32() * (i + 1) as f32) as usize;
-        x.swap(i, j);
         y.swap(i, j);
+        // swap the whole sample (a `cols`-float block), not single pixels
+        for k in 0..cols {
+            x.swap(i * cols + k, j * cols + k);
+        }
     }
 }

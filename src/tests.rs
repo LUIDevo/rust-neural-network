@@ -29,10 +29,13 @@ fn Linear_MSE_accuracy_works() {
 
 #[test]
 fn Linear_MSE_backward_pass() {
+    let a = Matrix::new(vec![1.0, 2.0, 3.0, 4.0], 2, 2);
     let b = Matrix::new(vec![5.0, 6.0, 7.0, 8.0], 2, 2);
     let t = Target::Dense(b);
     let mut output = Output::LinearMSE(LinearMeanSquaredError::default());
+    output.forward(&a, &t); // backward needs a prior forward to know shapes
     let result = output.backward(&t);
     println!("{:?}", result.data); // test earlier implementation vs after
-    // assert_eq!(output.forward(&a,&t), );
+    assert_eq!((result.rows(), result.cols()), (a.rows(), a.cols()));
+    assert_eq!(result.data.len(), a.data.len());
 }
