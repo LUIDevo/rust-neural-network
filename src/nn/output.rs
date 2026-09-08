@@ -81,17 +81,18 @@ impl SoftmaxLossCategoricalCrossEntropy {
         )
     }
     pub fn backward(&mut self, y_true: &Vec<usize>) -> Matrix {
-        // subtract 1 from the correct y_true for each row in self.output
-        // return (divide by len(self.output))
-        let mut out = Matrix::new(vec![0.0; self.output.data.len()], self.output.rows(), self.output.cols());
-        let length = self.output.data.len();
-        for (ri,row) in self.output.data.chunks(out.cols()).enumerate() {
-            for (i,&x) in row.iter().enumerate() {
-                let v = if i == y_true[ri] {x-1.0} else { x};
-                out.data.push( v / length as f32)
+        // subtract 1 from the correct y_true for each row in self.output,
+        // scale by 1 / batch size (rows), then wrap in one Matrix.
+        let (rows, cols) = (self.output.rows(), self.output.cols());
+        let samples = rows as f32;
+        let mut data = Vec::with_capacity(self.output.data.len());
+        for (ri, row) in self.output.data.chunks(cols).enumerate() {
+            for (i, &x) in row.iter().enumerate() {
+                let v = if i == y_true[ri] { x - 1.0 } else { x };
+                data.push(v / samples);
             }
         }
-        out
+        Matrix::new(data, rows, cols)
     }
 }
 
@@ -149,7 +150,7 @@ impl LinearMeanSquaredError {
     }
     pub fn backward(&mut self, y_true: &Matrix) -> Matrix {
         let samples = self.output.data.len() as f32;
-        let mut out = vec![0.0; y_true.data.len()];
+        let mut out = Vec::new();
         let row_length = self.output.cols();
         for (x,row) in self.output.data.chunks(self.output.cols()).enumerate() { 
             for (y, item) in row.iter().enumerate() { 
