@@ -1,4 +1,5 @@
-use crate::math::rng::Rng;
+//! 4-D tensor (n, c, h, w), flat row-major Vec<f32>, mirroring Matrix.
+
 use crate::math::matrix::Matrix;
 
 #[derive(Clone, Debug, PartialEq, Default)]
@@ -11,17 +12,22 @@ pub struct Tensor {
 }
 
 impl Tensor {
-    fn new(data: Vec<f32>, n:usize, c: usize, h: usize, w:usize) -> Self {
-        assert_eq!(data.len(), n*c*h*w);
-        Tensor { data, n, c, h, w}    
+    pub fn new(data: Vec<f32>, n: usize, c: usize, h: usize, w: usize) -> Self {
+        assert_eq!(data.len(), n * c * h * w);
+        Tensor { data, n, c, h, w }
     }
-    pub fn zeros(n: usize, c: usize, h:usize, w:usize) -> Self { 
-        Tensor { vec![0.0 as f32; n*c*h*w], n, c, h, w } 
+    pub fn zeros(n: usize, c: usize, h: usize, w: usize) -> Self {
+        Tensor { data: vec![0.0; n * c * h * w], n, c, h, w }
     }
     pub fn n(&self) -> usize { self.n }
     pub fn c(&self) -> usize { self.c }
     pub fn h(&self) -> usize { self.h }
     pub fn w(&self) -> usize { self.w }
+
+    pub fn idx(&self, n: usize, c: usize, y: usize, x: usize) -> usize {
+        ((n * self.c + c) * self.h + y) * self.w + x
+    }
+
     pub fn to_matrix(&self) -> Matrix {
         Matrix::new(self.data.clone(), self.n, self.c * self.h * self.w)
     }
