@@ -1,5 +1,3 @@
-//! 4-D tensor (n, c, h, w), flat row-major Vec<f32>, mirroring Matrix.
-
 use crate::math::matrix::Matrix;
 
 #[derive(Clone, Debug, PartialEq, Default)]
