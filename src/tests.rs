@@ -1,4 +1,4 @@
-use crate::math::matrix::{dot, transpose, Matrix};
+use crate::math::matrix::{Matrix, dot, transpose};
 use crate::nn::output::{LinearMeanSquaredError, Output, Target};
 
 #[test]

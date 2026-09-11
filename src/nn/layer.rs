@@ -84,28 +84,44 @@ impl LayerDropout {
         }
     }
     pub fn forward(&mut self, inputs: &Matrix) -> Matrix {
-        let (r,c)= (inputs.rows(), inputs.cols());
-        self.mask = Matrix::new(inputs.data
-            .iter()
-            .map(|_| {
-                if self.rng.next_f32() < self.rate as f32 {
-                    1.0 / self.rate
-                } else {
-                    0.0
-                }
-            })
-            .collect(), r, c);
-        Matrix::new(inputs.data.clone()
-            .iter()
-            .zip(&self.mask.data)
-            .map(|(i, m)| i*m)
-            .collect(), r, c)
+        let (r, c) = (inputs.rows(), inputs.cols());
+        self.mask = Matrix::new(
+            inputs
+                .data
+                .iter()
+                .map(|_| {
+                    if self.rng.next_f32() < self.rate as f32 {
+                        1.0 / self.rate
+                    } else {
+                        0.0
+                    }
+                })
+                .collect(),
+            r,
+            c,
+        );
+        Matrix::new(
+            inputs
+                .data
+                .clone()
+                .iter()
+                .zip(&self.mask.data)
+                .map(|(i, m)| i * m)
+                .collect(),
+            r,
+            c,
+        )
     }
     pub fn backward(&mut self, dvalues: &Matrix) -> Matrix {
-        Matrix::new(dvalues.data
-            .iter()
-            .zip(&self.mask.data)
-            .map(|(dv, m)| dv*m)
-            .collect(), dvalues.rows(), dvalues.cols())
+        Matrix::new(
+            dvalues
+                .data
+                .iter()
+                .zip(&self.mask.data)
+                .map(|(dv, m)| dv * m)
+                .collect(),
+            dvalues.rows(),
+            dvalues.cols(),
+        )
     }
 }

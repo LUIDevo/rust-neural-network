@@ -42,7 +42,7 @@ fn create_dataset(root: &Path, rng: &mut Rng) -> (Vec<f32>, Vec<usize>) {
         }
     }
     shuffle_dataset(&mut x, &mut y, rng);
-    (x,y)
+    (x, y)
 }
 
 fn main() {

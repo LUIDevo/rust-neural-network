@@ -41,9 +41,7 @@ impl Optimiser for Adam {
             .v_weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(&vw, dw)| {
-                    self.moment_decay * vw + (1.0 - self.moment_decay) * dw
-            })
+            .map(|(&vw, dw)| self.moment_decay * vw + (1.0 - self.moment_decay) * dw)
             .collect();
         layer.v_biases = layer
             .v_biases
@@ -55,7 +53,7 @@ impl Optimiser for Adam {
             .cache_weights
             .iter()
             .zip(&layer.dweights)
-            .map(|(cw, dw)| self.variance_decay * cw + (1.0 - self.variance_decay) * dw.powi(2) )
+            .map(|(cw, dw)| self.variance_decay * cw + (1.0 - self.variance_decay) * dw.powi(2))
             .collect();
         layer.cache_biases = layer
             .cache_biases
@@ -83,8 +81,10 @@ impl Optimiser for Adam {
             .iter()
             .map(|cb| cb / (1.0 - (self.variance_decay).powi(self.iterations)))
             .collect();
-        for i in 0..layer.weights.data.len() { 
-            layer.weights.data[i]=layer.weights.data[i] - vw_hat[i] * self.lr / (cw_hat[i].sqrt() + 1e-7) - self.lambda_reg * layer.weights.data[i];
+        for i in 0..layer.weights.data.len() {
+            layer.weights.data[i] = layer.weights.data[i]
+                - vw_hat[i] * self.lr / (cw_hat[i].sqrt() + 1e-7)
+                - self.lambda_reg * layer.weights.data[i];
         }
         // layer.weights = layer
         //     .weights.data
@@ -130,8 +130,9 @@ impl Optimiser for RMSProp {
         //             .collect()
         //     })
         //     .collect();
-        for i in 0..layer.weights.data.len() { 
-            layer.weights.data[i]=layer.weights.data[i] - layer.dweights[i] * self.lr / (layer.cache_weights[i].sqrt() + 1e-7);
+        for i in 0..layer.weights.data.len() {
+            layer.weights.data[i] = layer.weights.data[i]
+                - layer.dweights[i] * self.lr / (layer.cache_weights[i].sqrt() + 1e-7);
         }
         layer.biases = layer
             .biases
@@ -158,8 +159,9 @@ impl Optimiser for AdaGrad {
             .map(|(cb, db)| cb + db.powi(2))
             .collect();
 
-        for i in 0..layer.weights.data.len() { 
-            layer.weights.data[i]=layer.weights.data[i] - layer.dweights[i] * self.lr / (layer.cache_weights[i].sqrt() + 1e-7);
+        for i in 0..layer.weights.data.len() {
+            layer.weights.data[i] = layer.weights.data[i]
+                - layer.dweights[i] * self.lr / (layer.cache_weights[i].sqrt() + 1e-7);
         }
         // layer.weights = layer
         //     .weights.data
@@ -206,8 +208,8 @@ impl Optimiser for SGD {
             .zip(&layer.dbiases)
             .map(|(vb, db)| self.momentum * vb - self.lr * db)
             .collect();
-        for i in 0..layer.weights.data.len() { 
-            layer.weights.data[i]=layer.weights.data[i] + layer.v_weights[i];
+        for i in 0..layer.weights.data.len() {
+            layer.weights.data[i] = layer.weights.data[i] + layer.v_weights[i];
         }
         // layer.weights = layer
         //     .weights

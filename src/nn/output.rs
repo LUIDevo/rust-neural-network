@@ -41,11 +41,11 @@ pub struct SoftmaxLossCategoricalCrossEntropy {
 
 fn softmax(inputs: &Matrix) -> Vec<f32> {
     let mut out = Vec::with_capacity(inputs.data.len());
-    for row in inputs.data.chunks(inputs.cols()) { 
+    for row in inputs.data.chunks(inputs.cols()) {
         let max = row.iter().copied().fold(f32::NEG_INFINITY, f32::max);
-        let exps: Vec<f32> = row.iter().map(|c| (c-max).exp()).collect();
+        let exps: Vec<f32> = row.iter().map(|c| (c - max).exp()).collect();
         let sum: f32 = exps.iter().sum();
-        out.extend(exps.iter().map(|e| e/sum));
+        out.extend(exps.iter().map(|e| e / sum));
     }
     out
 }
@@ -53,22 +53,24 @@ fn softmax(inputs: &Matrix) -> Vec<f32> {
 impl SoftmaxLossCategoricalCrossEntropy {
     pub fn calculate_accuracy(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f32 {
         // find mean of percentage correct predictions
-        let mut count= 0;
+        let mut count = 0;
         for (row, y) in probabilities.data.chunks(probabilities.cols()).zip(y_true) {
             let pred = row
-               .iter()
-               .enumerate()
-               .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
-               .map(|(i, _)| i)
-               .unwrap();
-            if pred==*y { count+=1; }
+                .iter()
+                .enumerate()
+                .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                .map(|(i, _)| i)
+                .unwrap();
+            if pred == *y {
+                count += 1;
+            }
         }
-        count as f32/y_true.len() as f32
+        count as f32 / y_true.len() as f32
     }
     pub fn calculate_loss(&self, probabilities: &Matrix, y_true: &Vec<usize>) -> f32 {
-        let mut sum: f32=0.0;
-        for (i,row) in probabilities.data.chunks(probabilities.cols()).enumerate() {
-            sum+=-(row[y_true[i]].min(1.0 - 1e-7).max(1e-7)).ln()
+        let mut sum: f32 = 0.0;
+        for (i, row) in probabilities.data.chunks(probabilities.cols()).enumerate() {
+            sum += -(row[y_true[i]].min(1.0 - 1e-7).max(1e-7)).ln()
         }
         sum / y_true.len() as f32
     }
@@ -104,7 +106,12 @@ impl LinearMeanSquaredError {
         let precision = std / 250.0;
 
         let total = y_true.data.len() as f32;
-        let correct= predictions.data.iter().zip(&y_true.data).filter(|(p, y)| (*p-*y).abs() < precision).count() as f32;
+        let correct = predictions
+            .data
+            .iter()
+            .zip(&y_true.data)
+            .filter(|(p, y)| (*p - *y).abs() < precision)
+            .count() as f32;
         // for (p, y) in predictions.data.iter().zip(y_true) {
         //     for (pi, yi) in p.iter().zip(y) {
         //         total += 1.0;
@@ -117,14 +124,14 @@ impl LinearMeanSquaredError {
     }
     pub fn calculate_loss(&self, predictions: &Matrix, y_true: &Matrix) -> f32 {
         let samples = predictions.data.len() as f32;
-        let mut sum:f32 = 0.0;
-        for (x,row) in predictions.data.chunks(predictions.cols()).enumerate() {
+        let mut sum: f32 = 0.0;
+        for (x, row) in predictions.data.chunks(predictions.cols()).enumerate() {
             let cols = row.len() as f32;
-            let mut sub_sum: f32= 0.0;
+            let mut sub_sum: f32 = 0.0;
             for (y, col) in row.iter().enumerate() {
-                sub_sum+=(col - y_true.data[x*(y_true.cols())+y]).powi(2);
+                sub_sum += (col - y_true.data[x * (y_true.cols()) + y]).powi(2);
             }
-            sum+= sub_sum / cols;
+            sum += sub_sum / cols;
         }
         sum / samples
         // predictions
@@ -152,9 +159,11 @@ impl LinearMeanSquaredError {
         let samples = self.output.data.len() as f32;
         let mut out = Vec::new();
         let row_length = self.output.cols();
-        for (x,row) in self.output.data.chunks(self.output.cols()).enumerate() { 
-            for (y, item) in row.iter().enumerate() { 
-                out.push(2.0 * (item - y_true.data[x*row_length+y]) / row_length as f32 / samples)
+        for (x, row) in self.output.data.chunks(self.output.cols()).enumerate() {
+            for (y, item) in row.iter().enumerate() {
+                out.push(
+                    2.0 * (item - y_true.data[x * row_length + y]) / row_length as f32 / samples,
+                )
             }
         }
         Matrix::new(out, y_true.rows(), y_true.cols())
