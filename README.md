@@ -4,15 +4,27 @@ I built a simple classification model from scratch among some other things in th
 
 Also, I will implement wgpu, and I learned that GPU programming is much more complicated than I thought. It involves staging and buffers and alot of other things that I didn't realise I needed. 
 
-Dev Roadmap:
+Dev Roadmap
+
 - [x] Fashion-MNIST (Dense baseline)
 - [x] Document accuracy and speed
 - [x] Switch to flat vec + f32
-- [ ] GPU (wgpu)
-- [ ] Self-attention from scratch
-- [ ] LayerNorm + Residual connections
-- [ ] Multi-head attention + positional encoding
-- [ ] Minimal transformer block
+- [ ] Batched matmul (batch, seq, dim)
+- [ ] Gradient check helper
+- [ ] Tokenizer + sequence batching
+- [ ] Token + positional embeddings
+- [ ] LayerNorm + residual connections
+- [ ] Causal self-attention, single head (forward + backward)
+- [ ] Transformer block + LM head (FFN, output projection, token cross-entropy)
+- [ ] Training: shifted targets, grad clipping, LR warmup
+- [ ] Sampling + generated sample in README
+- [ ] Multi-head attention
+
+Optional
+- [ ] KV cache for generation
+- [ ] Benchmark tokens/sec
+- [ ] GPU (wgpu) for large matmuls
+- [ ] CNN path
 
 # Dense baseline:
 ```
